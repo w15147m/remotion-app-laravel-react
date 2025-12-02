@@ -1,0 +1,351 @@
+import React, { useState, useRef } from 'react';
+import { Upload, Download, X, CheckCircle } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import AlertError from '@/components/ui/alert-error';
+
+export default function VideoItemsBulkUpload({ videoId, onSuccess }) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [file, setFile] = useState(null);
+  const [preview, setPreview] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState([]);
+  const [success, setSuccess] = useState(null);
+  const [step, setStep] = useState('upload'); // upload, preview, result
+  const fileInputRef = useRef(null);
+
+  // Get CSRF token from meta tag
+  const getCsrfToken = () => {
+    return document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+  };
+
+  // Handle file selection
+  const handleFileChange = (e) => {
+    const selectedFile = e.target.files?.[0];
+    if (selectedFile) {
+      setFile(selectedFile);
+      setErrors([]);
+      previewFile(selectedFile);
+    }
+  };
+
+  // Send file to backend for preview
+  const previewFile = async (selectedFile) => {
+    setLoading(true);
+    const formData = new FormData();
+    formData.append('file', selectedFile);
+    formData.append('video_id', videoId);
+
+    try {
+      const response = await fetch('/api/video-items/preview', {
+        method: 'POST',
+        body: formData,
+        headers: {
+          'X-CSRF-TOKEN': getCsrfToken(),
+          'Accept': 'application/json',
+        },
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setErrors([data.message || 'Failed to preview file']);
+        setLoading(false);
+        return;
+      }
+
+      setPreview(data.data || []);
+
+      // Show errors if any
+      if (data.errors && data.errors.length > 0) {
+        setErrors(data.errors);
+      }
+
+      setStep('preview');
+    } catch (error) {
+      setErrors(['Error reading file: ' + error.message]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Send file to backend for import
+  const handleUpload = async () => {
+    setLoading(true);
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('video_id', videoId);
+
+    try {
+      const response = await fetch('/api/video-items/bulk-import', {
+        method: 'POST',
+        body: formData,
+        headers: {
+          'X-CSRF-TOKEN': getCsrfToken(),
+          'Accept': 'application/json',
+        },
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setErrors(data.errors || [data.message || 'Upload failed']);
+        return;
+      }
+
+      setSuccess(data);
+      setStep('result');
+      setFile(null);
+      setPreview([]);
+
+      // Callback to parent to refresh list
+      if (onSuccess) onSuccess();
+    } catch (error) {
+      setErrors(['Upload failed: ' + error.message]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+const downloadTemplate = async () => {
+  try {
+    const response = await fetch('/api/video-items/template', {
+      method: 'GET',
+      headers: {
+        'X-CSRF-TOKEN': getCsrfToken(),
+        'Accept': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      },
+    });
+
+    if (!response.ok) {
+      alert('Failed to download template');
+      return;
+    }
+
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'video_items_template.xlsx';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  } catch (error) {
+    console.error('Download error:', error);
+    alert('Error downloading template');
+  }
+};
+
+  // Reset form
+  const resetForm = () => {
+    setStep('upload');
+    setFile(null);
+    setPreview([]);
+    setErrors([]);
+    setSuccess(null);
+    fileInputRef.current.value = '';
+  };
+
+  // Close modal
+  const closeModal = () => {
+    resetForm();
+    setIsOpen(false);
+  };
+
+  return (
+    <>
+      {/* Button to open modal */}
+      <Button
+        onClick={() => setIsOpen(true)}
+        className="gap-2"
+      >
+        <Upload className="w-4 h-4" />
+        Bulk Upload
+      </Button>
+
+      {/* Modal Dialog */}
+      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Upload className="w-5 h-5" />
+              Bulk Upload Video Items
+            </DialogTitle>
+          </DialogHeader>
+
+          <div className="space-y-4">
+            {/* Upload Step */}
+            {step === 'upload' && (
+              <div className="space-y-4">
+                {/* Template Download */}
+                <div className="bg-blue-50 dark:bg-blue-950 p-3 rounded-lg">
+                  <p className="text-sm text-blue-900 dark:text-blue-100 mb-2">
+                    Download the template to see the correct format.
+                  </p>
+                  <Button
+                    onClick={downloadTemplate}
+                    variant="outline"
+                    size="sm"
+                    className="gap-2"
+                  >
+                    <Download className="w-4 h-4" />
+                    Download Template
+                  </Button>
+                </div>
+
+                {/* File Upload Area */}
+                <div
+                  onClick={() => fileInputRef.current?.click()}
+                  className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-8 text-center cursor-pointer hover:border-blue-500 transition-colors"
+                >
+                  <Upload className="w-10 h-10 mx-auto mb-2 text-gray-400" />
+                  <p className="text-gray-700 dark:text-gray-300 font-medium mb-1 text-sm">
+                    Click to upload or drag and drop
+                  </p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                    Excel (.xlsx, .xls) or CSV files only
+                  </p>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept=".xlsx,.xls,.csv"
+                    onChange={handleFileChange}
+                    disabled={loading}
+                    className="hidden"
+                  />
+                </div>
+
+                {/* Selected File */}
+                {file && (
+                  <div className="bg-gray-50 dark:bg-gray-900 p-3 rounded-lg flex items-center justify-between">
+                    <span className="text-sm font-medium">{file.name}</span>
+                    <button
+                      onClick={() => {
+                        setFile(null);
+                        fileInputRef.current.value = '';
+                      }}
+                      disabled={loading}
+                      className="text-gray-500 hover:text-red-500"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                )}
+
+                {/* Loading */}
+                {loading && (
+                  <div className="text-center text-sm text-gray-600 dark:text-gray-400">
+                    <div className="inline-block animate-spin mr-2">⏳</div>
+                    Reading file...
+                  </div>
+                )}
+
+                {/* Errors */}
+                {errors.length > 0 && <AlertError errors={errors} />}
+              </div>
+            )}
+
+            {/* Preview Step */}
+            {step === 'preview' && (
+              <div className="space-y-4">
+                <h3 className="font-medium">Preview Data ({preview.length} items)</h3>
+
+                {/* Preview Table */}
+                <div className="overflow-x-auto max-h-80 overflow-y-auto border rounded-lg">
+                  <table className="w-full text-xs">
+                    <thead className="sticky top-0">
+                      <tr className="bg-gray-100 dark:bg-gray-800">
+                        <th className="px-2 py-2 text-left font-medium">Title</th>
+                        <th className="px-2 py-2 text-left font-medium">Heading</th>
+                        <th className="px-2 py-2 text-left font-medium">Year</th>
+                        <th className="px-2 py-2 text-left font-medium">Rank</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {preview.slice(0, 15).map((item, idx) => (
+                        <tr key={idx} className="border-b hover:bg-gray-50 dark:hover:bg-gray-900">
+                          <td className="px-2 py-2 truncate">{item.title}</td>
+                          <td className="px-2 py-2 truncate">{item.heading || '—'}</td>
+                          <td className="px-2 py-2">{item.year || '—'}</td>
+                          <td className="px-2 py-2">{item.rank_number || '—'}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                {preview.length > 15 && (
+                  <p className="text-xs text-gray-500">
+                    ... and {preview.length - 15} more items
+                  </p>
+                )}
+
+                {/* Errors from preview */}
+                {errors.length > 0 && (
+                  <div className="bg-yellow-50 dark:bg-yellow-950 p-3 rounded-lg">
+                    <p className="text-xs text-yellow-900 dark:text-yellow-100 font-medium mb-2">
+                      ⚠️ {errors.length} validation issue(s):
+                    </p>
+                    <div className="text-xs space-y-1 max-h-32 overflow-y-auto">
+                      {errors.slice(0, 5).map((err, idx) => (
+                        <p key={idx} className="text-yellow-800 dark:text-yellow-200">{err}</p>
+                      ))}
+                      {errors.length > 5 && (
+                        <p className="text-yellow-800 dark:text-yellow-200">... and {errors.length - 5} more</p>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Action Buttons */}
+                <div className="flex gap-3 justify-end pt-2">
+                  <Button
+                    onClick={() => closeModal()}
+                    variant="outline"
+                    size="sm"
+                    disabled={loading}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={handleUpload}
+                    size="sm"
+                    disabled={loading || preview.length === 0}
+                  >
+                    {loading ? 'Uploading...' : `Upload ${preview.length}`}
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {/* Result Step */}
+            {step === 'result' && success && (
+              <div className="space-y-4">
+                <div className="bg-green-50 dark:bg-green-950 p-4 rounded-lg space-y-2">
+                  <p className="text-sm text-green-900 dark:text-green-100 flex items-center gap-2">
+                    <CheckCircle className="w-4 h-4" />
+                    <strong>{success.created}</strong> items created successfully
+                  </p>
+                  {success.skipped > 0 && (
+                    <p className="text-sm text-yellow-900 dark:text-yellow-100">
+                      ⚠️ <strong>{success.skipped}</strong> items skipped
+                    </p>
+                  )}
+                </div>
+
+                <Button onClick={closeModal} className="w-full" size="sm">
+                  Close
+                </Button>
+              </div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
+  );
+}

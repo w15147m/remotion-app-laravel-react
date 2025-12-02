@@ -1,0 +1,14 @@
+node_modules
+
+/.cache
+/build
+/public/build
+/public/videos
+
+.env
+/out
+.nvmrc
+.react-router/
+/reference
+.DS_Store
+api
