@@ -13,15 +13,20 @@ class VideoItem extends Model
         'video_id',
         'sequence',
         'title',
+        'subtitle',
         'heading',
+        'icon',
+        'country',
         'year',
+        'year_range',
         'rank_number',
         'rank_type',
+        'rank_label',
+        'label',
         'detail_text',
         'media_url',
+        'type',
         'data',
-        'country',
-
     ];
 
     protected $appends = ['image_url'];

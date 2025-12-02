@@ -6,10 +6,10 @@ import {
   COMPOSITION_WIDTH,
 } from "../../remotion/constants.mjs";
 import { z } from "zod";
-import { Main } from "./components/Main";
-import { RenderControls } from "../../components/features/rendering/RenderControls";
+import { Main } from "./components/Main.js";
+import { RenderControls } from "../../components/features/rendering/RenderControls.js";
 
-import { CompositionProps, GenericCardData } from "../../remotion/schemata";
+import { CompositionProps, GenericCardData } from "../../remotion/schemata.js";
 import { videoItems } from "../../data/data.js";
 
 export default function Index() {
