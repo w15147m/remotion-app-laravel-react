@@ -86,7 +86,7 @@ const Carousel = ({ children }: CarouselProps) => {
 
 export default function TestPage() {
   return (
-    <div className='carousel-app'>
+    <div className='carousel-app w-full min-h-[85vh] bg-neutral-100 dark:bg-neutral-900 flex items-center justify-center overflow-hidden rounded-xl shadow-inner'>
       <Carousel>
         {[...new Array(CARDS)].map((_, i) => (
           <Card
