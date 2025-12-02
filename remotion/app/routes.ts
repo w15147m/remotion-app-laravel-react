@@ -9,6 +9,8 @@ export default [
     index("./pages/videos/home.tsx"),
     route("/short", "./pages/shorts/home.tsx"),
     route("/test", "./pages/test.tsx"),
+    route("/videos-list", "./pages/videos/table.tsx"),
+    route("/shorts-list", "./pages/shorts/table.tsx"),
   ]),
 
   // API routes (not protected)

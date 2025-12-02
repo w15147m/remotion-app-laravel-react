@@ -38,6 +38,18 @@ export function DesktopSidebar() {
         >
           <span>Test</span>
         </Link>
+        <Link
+          className={getLinkClass("/videos-list")}
+          to="/videos-list"
+        >
+          <span>Videos Table</span>
+        </Link>
+        <Link
+          className={getLinkClass("/shorts-list")}
+          to="/shorts-list"
+        >
+          <span>Shorts Table</span>
+        </Link>
       </nav>
     </div>
   );
@@ -75,6 +87,18 @@ export function MobileNav() {
         to="/test"
       >
         <span>Test</span>
+      </Link>
+      <Link
+        className={getLinkClass("/videos-list")}
+        to="/videos-list"
+      >
+        <span>Videos Table</span>
+      </Link>
+      <Link
+        className={getLinkClass("/shorts-list")}
+        to="/shorts-list"
+      >
+        <span>Shorts Table</span>
       </Link>
     </nav>
   );

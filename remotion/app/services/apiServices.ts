@@ -34,7 +34,7 @@ api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
     try {
       const authInfo: AuthInfo = JSON.parse(authInfoStr);
       const token = authInfo?.token;
-      
+
       if (token && config.headers) {
         config.headers.Authorization = `Bearer ${token}`;
       }
@@ -64,6 +64,13 @@ const handleApiError = (error: AxiosError<ApiError>) => {
       const combined = Object.values(errorData.errors).flat().join('\n');
       // You can integrate toast here if needed
       console.error(combined || message);
+      return Promise.reject(errorData);
+    }
+
+    if (response.status === 401) {
+      console.error('Unauthorized! Redirecting to login...');
+      localStorage.removeItem('authInfo');
+      window.location.href = '/login';
       return Promise.reject(errorData);
     }
 
