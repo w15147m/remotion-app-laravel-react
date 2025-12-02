@@ -13,11 +13,18 @@ interface VideoItem {
   sequence: number;
   image_url: string | null;
   title: string | null;
+  subtitle: string | null;
   heading: string | null;
+  icon: string | null;
+  country: string | null;
   year: number | null;
+  year_range: string | null;
   rank_number: number | null;
   rank_type: string | null;
+  rank_label: string | null;
+  label: string | null;
   detail_text: string | null;
+  type: string | null;
 }
 
 interface Video {
@@ -69,16 +76,22 @@ export default function VideoItemPage({ video, video_items: initialItems }: Vide
                 Media
               </th>
               <th className="px-4 py-3 text-left text-xs font-medium tracking-wider text-neutral-500 uppercase dark:text-neutral-400">
-                Title / Heading
+                Title / Subtitle
               </th>
               <th className="px-4 py-3 text-left text-xs font-medium tracking-wider text-neutral-500 uppercase dark:text-neutral-400">
-                Year
+                Icon
+              </th>
+              <th className="px-4 py-3 text-left text-xs font-medium tracking-wider text-neutral-500 uppercase dark:text-neutral-400">
+                Country
+              </th>
+              <th className="px-4 py-3 text-left text-xs font-medium tracking-wider text-neutral-500 uppercase dark:text-neutral-400">
+                Year / Range
               </th>
               <th className="px-4 py-3 text-left text-xs font-medium tracking-wider text-neutral-500 uppercase dark:text-neutral-400">
                 Rank
               </th>
               <th className="px-4 py-3 text-left text-xs font-medium tracking-wider text-neutral-500 uppercase dark:text-neutral-400">
-                Detail
+                Type
               </th>
 
               <th className="w-32 px-4 py-3 text-center text-xs font-medium tracking-wider text-neutral-500 uppercase dark:text-neutral-400">
@@ -107,21 +120,31 @@ export default function VideoItemPage({ video, video_items: initialItems }: Vide
                     )}
                   </td>
 
-                  {/* Title + Heading */}
+                  {/* Title + Subtitle */}
                   <td className="px-4 py-4">
                     <div className="text-sm font-semibold text-neutral-900 dark:text-neutral-100">
                       {item.title || 'Untitled'}
                     </div>
-                    {item.heading && (
+                    {item.subtitle && (
                       <div className="text-xs text-neutral-500 dark:text-neutral-400">
-                        {item.heading}
+                        {item.subtitle}
                       </div>
                     )}
                   </td>
 
-                  {/* Year */}
+                  {/* Icon */}
+                  <td className="px-4 py-4 text-lg">
+                    {item.icon || '—'}
+                  </td>
+
+                  {/* Country */}
                   <td className="px-4 py-4 text-sm text-neutral-700 dark:text-neutral-300">
-                    {item.year || '—'}
+                    {item.country || '—'}
+                  </td>
+
+                  {/* Year / Year Range */}
+                  <td className="px-4 py-4 text-sm text-neutral-700 dark:text-neutral-300">
+                    {item.year_range || item.year || '—'}
                   </td>
 
                   {/* Rank */}
@@ -129,16 +152,21 @@ export default function VideoItemPage({ video, video_items: initialItems }: Vide
                     {item.rank_number ? (
                       <>
                         #{item.rank_number}{' '}
-                        <span className="text-xs text-neutral-400">({item.rank_type || 'N/A'})</span>
+                        <span className="text-xs text-neutral-400">({item.rank_label || item.label || 'N/A'})</span>
                       </>
                     ) : (
                       '—'
                     )}
                   </td>
 
-                  {/* Detail Text */}
-                  <td className="px-4 py-4 text-sm text-neutral-600 dark:text-neutral-300 max-w-sm truncate">
-                    {item.detail_text || '—'}
+                  {/* Type */}
+                  <td className="px-4 py-4">
+                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${item.type === 'short'
+                        ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
+                        : 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200'
+                      }`}>
+                      {item.type || 'short'}
+                    </span>
                   </td>
 
                   {/* Edit/Delete */}
