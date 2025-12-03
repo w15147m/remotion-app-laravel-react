@@ -55,15 +55,21 @@ class VideoItemController extends Controller
     {
         $validated = $request->validate([
             'title' => 'nullable|string|max:255',
+            'subtitle' => 'nullable|string|max:255',
             'heading' => 'nullable|string|max:255',
+            'icon' => 'nullable|string|max:10',
+            'country' => 'nullable|string|max:100',
             'year' => 'nullable|integer|min:1900|max:2100',
+            'year_range' => 'nullable|string|max:50',
             'rank_number' => 'nullable|integer',
             'rank_type' => 'nullable|string|max:50',
+            'rank_label' => 'nullable|string|max:100',
+            'label' => 'nullable|string|max:100',
+            'type' => 'nullable|in:short,video',
             'detail_text' => 'nullable|string',
             'media_url' => 'nullable|url|max:255',
             'video_id' => 'required|exists:videos,id',
             'data' => 'nullable|array',
-            'country' => 'nullable|string|max:100', // ✅ Added validation
         ]);
 
         $nextSequence = VideoItem::where('video_id', $validated['video_id'])->max('sequence');
@@ -86,15 +92,21 @@ class VideoItemController extends Controller
 
         $validated = $request->validate([
             'title' => 'nullable|string|max:255',
+            'subtitle' => 'nullable|string|max:255',
             'heading' => 'nullable|string|max:255',
+            'icon' => 'nullable|string|max:10',
+            'country' => 'nullable|string|max:100',
             'year' => 'nullable|integer|min:1900|max:2100',
+            'year_range' => 'nullable|string|max:50',
             'rank_number' => 'nullable|integer',
             'rank_type' => 'nullable|string|max:50',
+            'rank_label' => 'nullable|string|max:100',
+            'label' => 'nullable|string|max:100',
+            'type' => 'nullable|in:short,video',
             'detail_text' => 'nullable|string',
             'media_url' => 'nullable|url|max:255',
             'video_id' => 'required|exists:videos,id',
             'data' => 'nullable|array',
-            'country' => 'nullable|string|max:100', // ✅ Added validation
         ]);
 
         $video_item->update($validated);
