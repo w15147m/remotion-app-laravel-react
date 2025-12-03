@@ -46,8 +46,21 @@ export const VideoTable: React.FC<VideoTableProps> = ({ title }) => {
       const response = await get<{ data: any[] }>(`/videos/${videoId}/items`);
       const items = response.data;
 
+      // Map to camelCase for Zod schema
+      const mappedItems = items.map((item) => ({
+        title: item.title,
+        subtitle: item.subtitle,
+        icon: item.icon,
+        country: item.country,
+        yearRange: item.year_range,
+        label: item.label,
+        rankNumber: item.rank_number,
+        rankLabel: item.rank_label,
+        mediaUrl: item.image_url || item.media_url,
+      }));
+
       // Update sessionStorage
-      sessionStorage.setItem('videoItems', JSON.stringify(items));
+      sessionStorage.setItem('videoItems', JSON.stringify(mappedItems));
 
       // Redirect based on type
       if (videoType === 'short') {

@@ -1,15 +1,15 @@
 import { z } from "zod";
 
 export const GenericCardData = z.object({
-  title: z.string(),
-  subtitle: z.string().optional(),
-  icon: z.string().optional(),
-  country: z.string().optional(),
-  yearRange: z.string().optional(),
-  label: z.string().optional(),
-  rankNumber: z.number().optional(),
-  rankLabel: z.string().optional(),
-  mediaUrl: z.string().optional(),
+  title: z.string().nullable(),
+  subtitle: z.string().nullish(),
+  icon: z.string().nullish(),
+  country: z.string().nullish(),
+  yearRange: z.string().nullish(),
+  label: z.string().nullish(),
+  rankNumber: z.number().nullish(),
+  rankLabel: z.string().nullish(),
+  mediaUrl: z.string().nullish(),
 });
 
 export const CompositionProps = z.object({
