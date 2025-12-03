@@ -9,6 +9,9 @@ import {
 } from '@/components/ui/dialog';
 import AlertError from '@/components/ui/alert-error';
 
+import axios from 'axios';
+import * as XLSX from 'xlsx';
+
 export default function VideoItemsBulkUpload({ videoId, onSuccess }) {
   const [isOpen, setIsOpen] = useState(false);
   const [file, setFile] = useState(null);
@@ -18,11 +21,6 @@ export default function VideoItemsBulkUpload({ videoId, onSuccess }) {
   const [success, setSuccess] = useState(null);
   const [step, setStep] = useState('upload'); // upload, preview, result
   const fileInputRef = useRef(null);
-
-  // Get CSRF token from meta tag
-  const getCsrfToken = () => {
-    return document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
-  };
 
   // Handle file selection
   const handleFileChange = (e) => {
@@ -34,70 +32,76 @@ export default function VideoItemsBulkUpload({ videoId, onSuccess }) {
     }
   };
 
-  // Send file to backend for preview
+  // Parse Excel file on client-side
   const previewFile = async (selectedFile) => {
     setLoading(true);
-    const formData = new FormData();
-    formData.append('file', selectedFile);
-    formData.append('video_id', videoId);
 
     try {
-      const response = await fetch('/api/video-items/preview', {
-        method: 'POST',
-        body: formData,
-        headers: {
-          'X-CSRF-TOKEN': getCsrfToken(),
-          'Accept': 'application/json',
-        },
-      });
+      const data = await selectedFile.arrayBuffer();
+      const workbook = XLSX.read(data);
+      const worksheet = workbook.Sheets[workbook.SheetNames[0]];
 
-      const data = await response.json();
+      // Convert to JSON, starting from row 2 (skip header)
+      const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
 
-      if (!response.ok) {
-        setErrors([data.message || 'Failed to preview file']);
-        setLoading(false);
-        return;
+      // Skip header row and parse data
+      const parsedData = [];
+      const validationErrors = [];
+
+      for (let i = 1; i < jsonData.length; i++) {
+        const row = jsonData[i];
+
+        // Stop if row is empty
+        if (!row || row.every(cell => !cell)) break;
+
+        const item = {
+          title: row[0] || null,
+          subtitle: row[1] || null,
+          heading: row[2] || null,
+          icon: row[3] || null,
+          country: row[4] || null,
+          year: row[5] ? parseInt(row[5]) : null,
+          year_range: row[6] || null,
+          rank_number: row[7] ? parseInt(row[7]) : null,
+          rank_type: row[8] || null,
+          rank_label: row[9] || null,
+          label: row[10] || null,
+          detail_text: row[11] || null,
+        };
+
+        // Basic validation
+        if (!item.title) {
+          validationErrors.push(`Row ${i + 1}: Title is required`);
+          continue;
+        }
+
+        parsedData.push(item);
       }
 
-      setPreview(data.data || []);
-
-      // Show errors if any
-      if (data.errors && data.errors.length > 0) {
-        setErrors(data.errors);
+      setPreview(parsedData);
+      if (validationErrors.length > 0) {
+        setErrors(validationErrors);
       }
-
       setStep('preview');
     } catch (error) {
+      console.error('Parse error:', error);
       setErrors(['Error reading file: ' + error.message]);
     } finally {
       setLoading(false);
     }
   };
 
-  // Send file to backend for import
+  // Send parsed data to backend
   const handleUpload = async () => {
     setLoading(true);
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('video_id', videoId);
 
     try {
-      const response = await fetch('/api/video-items/bulk-import', {
-        method: 'POST',
-        body: formData,
-        headers: {
-          'X-CSRF-TOKEN': getCsrfToken(),
-          'Accept': 'application/json',
-        },
+      const response = await axios.post('/video-items/bulk-import', {
+        video_id: videoId,
+        items: preview,
       });
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        setErrors(data.errors || [data.message || 'Upload failed']);
-        return;
-      }
-
+      const data = response.data;
       setSuccess(data);
       setStep('result');
       setFile(null);
@@ -106,7 +110,12 @@ export default function VideoItemsBulkUpload({ videoId, onSuccess }) {
       // Callback to parent to refresh list
       if (onSuccess) onSuccess();
     } catch (error) {
-      setErrors(['Upload failed: ' + error.message]);
+      console.error('Upload error:', error);
+      if (error.response) {
+        setErrors(error.response.data.errors || [error.response.data.message || 'Upload failed']);
+      } else {
+        setErrors(['Upload failed: ' + error.message]);
+      }
     } finally {
       setLoading(false);
     }

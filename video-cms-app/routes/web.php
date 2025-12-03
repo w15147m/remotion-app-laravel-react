@@ -4,6 +4,7 @@ use App\Http\Controllers\PlaylistController;
 use App\Http\Controllers\TempImageController;
 use App\Http\Controllers\VideoController;
 use App\Http\Controllers\VideoItemController;
+use App\Http\Controllers\Api\BulkImportVideoItemController; // ⬅️ ADD THIS
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -23,6 +24,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         return Inertia::render('test');
     })->name('test');
     Route::get('video/Items/{id}', [VideoItemController::class, 'showVideoItems']);
+    
+    // Bulk import route (JSON-based, no file upload)
+    Route::post('video-items/bulk-import', [BulkImportVideoItemController::class, 'bulkImport']);
+    
     Route::get('playlist', function () {
         return Inertia::render('video-admin/Playlist/PlaylistPage');
     })->name('playlist');

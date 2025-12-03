@@ -86,69 +86,42 @@ class BulkImportVideoItemController extends Controller
     }
 
     /**
-     * Import Excel data into database
-     * POST /api/video-items/bulk-import
+     * Import JSON data into database
+     * POST /video-items/bulk-import
      */
     public function bulkImport(Request $request)
     {
         $request->validate([
-            'file' => 'required|file|mimes:xlsx,xls,csv',
             'video_id' => 'required|exists:videos,id',
+            'items' => 'required|array',
+            'items.*.title' => 'required|string|max:255',
+            'items.*.subtitle' => 'nullable|string|max:255',
+            'items.*.heading' => 'nullable|string|max:255',
+            'items.*.icon' => 'nullable|string|max:10',
+            'items.*.country' => 'nullable|string|max:100',
+            'items.*.year' => 'nullable|integer|min:1900|max:2100',
+            'items.*.year_range' => 'nullable|string|max:50',
+            'items.*.rank_number' => 'nullable|integer',
+            'items.*.rank_type' => 'nullable|string|max:50',
+            'items.*.rank_label' => 'nullable|string|max:100',
+            'items.*.label' => 'nullable|string|max:100',
+            'items.*.detail_text' => 'nullable|string|max:5000',
         ]);
 
         try {
             $videoId = $request->video_id;
-            $file = $request->file('file');
-            $spreadsheet = IOFactory::load($file->getPathname());
-            $worksheet = $spreadsheet->getActiveSheet();
-
-            $created = 0;
-            $skipped = 0;
-            $errors = [];
+            $items = $request->items;
 
             // Get the highest sequence number for this video
             $maxSequence = VideoItem::where('video_id', $videoId)->max('sequence') ?? 0;
             $nextSequence = $maxSequence + 1;
 
-            $rowNumber = 2;
+            $created = 0;
+            $skipped = 0;
+            $errors = [];
 
-            // Process each row
-            foreach ($worksheet->getRowIterator(2) as $row) {
-                $cellIterator = $row->getCellIterator('A', 'L');
-                $cellIterator->setIterateOnlyExistingCells(false);
-
-                $data = [];
-                $cells = iterator_to_array($cellIterator);
-
-                // Map columns
-                $data['title'] = $cells['A']?->getValue() ?? null;
-                $data['subtitle'] = $cells['B']?->getValue() ?? null;
-                $data['heading'] = $cells['C']?->getValue() ?? null;
-                $data['icon'] = $cells['D']?->getValue() ?? null;
-                $data['country'] = $cells['E']?->getValue() ?? null;
-                $data['year'] = $cells['F']?->getValue() ?? null;
-                $data['year_range'] = $cells['G']?->getValue() ?? null;
-                $data['rank_number'] = $cells['H']?->getValue() ?? null;
-                $data['rank_type'] = $cells['I']?->getValue() ?? null;
-                $data['rank_label'] = $cells['J']?->getValue() ?? null;
-                $data['label'] = $cells['K']?->getValue() ?? null;
-                $data['detail_text'] = $cells['L']?->getValue() ?? null;
-
-                // Stop if all cells are empty
-                if (!$data['title'] && !$data['heading'] && !$data['year'] && !$data['rank_number']) {
-                    break;
-                }
-
-                // Validate row
-                $validation = $this->validateRow($data, $rowNumber);
-
-                if (!$validation['valid']) {
-                    $skipped++;
-                    $errors[] = "Row {$rowNumber}: " . implode(', ', $validation['errors']);
-                    $rowNumber++;
-                    continue;
-                }
-
+            // Process each item
+            foreach ($items as $index => $data) {
                 // Prepare data for insertion
                 $itemData = [
                     'video_id' => $videoId,
@@ -158,9 +131,9 @@ class BulkImportVideoItemController extends Controller
                     'heading' => $data['heading'] ?? null,
                     'icon' => $data['icon'] ?? null,
                     'country' => $data['country'] ?? null,
-                    'year' => $data['year'] ? (int)$data['year'] : null,
+                    'year' => $data['year'] ?? null,
                     'year_range' => $data['year_range'] ?? null,
-                    'rank_number' => $data['rank_number'] ? (int)$data['rank_number'] : null,
+                    'rank_number' => $data['rank_number'] ?? null,
                     'rank_type' => $data['rank_type'] ?? null,
                     'rank_label' => $data['rank_label'] ?? null,
                     'label' => $data['label'] ?? null,
@@ -175,10 +148,8 @@ class BulkImportVideoItemController extends Controller
                     $nextSequence++;
                 } catch (\Exception $e) {
                     $skipped++;
-                    $errors[] = "Row {$rowNumber}: Failed to create - " . $e->getMessage();
+                    $errors[] = "Item " . ($index + 1) . ": Failed to create - " . $e->getMessage();
                 }
-
-                $rowNumber++;
             }
 
             return response()->json([

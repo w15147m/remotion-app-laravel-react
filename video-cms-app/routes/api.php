@@ -18,11 +18,6 @@ Route::post('/login', [logIn::class, 'login']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/videos/{id}/items', [ApiVideoItemController::class, 'videosItems']);
 
-    // ⬅️ ADD THESE BULK IMPORT ROUTES
-    Route::post('/video-items/preview', [BulkImportVideoItemController::class, 'preview']);
-    Route::post('/video-items/bulk-import', [BulkImportVideoItemController::class, 'bulkImport']);
-    Route::get('/video-items/template', [BulkImportVideoItemController::class, 'downloadTemplate']);
-
     Route::resources([
         'playlists'   => ApiPlaylistController::class,
         'videos'      => ApiVideoController::class,
