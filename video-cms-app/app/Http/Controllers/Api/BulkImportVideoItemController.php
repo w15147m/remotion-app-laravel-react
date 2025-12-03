@@ -34,20 +34,25 @@ class BulkImportVideoItemController extends Controller
 
             // Get all rows
             foreach ($worksheet->getRowIterator(2) as $row) {
-                $cellIterator = $row->getCellIterator('A', 'G');
+                $cellIterator = $row->getCellIterator('A', 'L');
                 $cellIterator->setIterateOnlyExistingCells(false);
 
                 $data = [];
                 $cells = iterator_to_array($cellIterator);
 
-                // Map columns: A=title, B=heading, C=year, D=rank_number, E=rank_type, F=detail_text, G=country
+                // Map columns: A=title, B=subtitle, C=heading, D=icon, E=country, F=year, G=year_range, H=rank_number, I=rank_type, J=rank_label, K=label, L=detail_text
                 $data['title'] = $cells['A']?->getValue() ?? null;
-                $data['heading'] = $cells['B']?->getValue() ?? null;
-                $data['year'] = $cells['C']?->getValue() ?? null;
-                $data['rank_number'] = $cells['D']?->getValue() ?? null;
-                $data['rank_type'] = $cells['E']?->getValue() ?? null;
-                $data['detail_text'] = $cells['F']?->getValue() ?? null;
-                $data['country'] = $cells['G']?->getValue() ?? null;
+                $data['subtitle'] = $cells['B']?->getValue() ?? null;
+                $data['heading'] = $cells['C']?->getValue() ?? null;
+                $data['icon'] = $cells['D']?->getValue() ?? null;
+                $data['country'] = $cells['E']?->getValue() ?? null;
+                $data['year'] = $cells['F']?->getValue() ?? null;
+                $data['year_range'] = $cells['G']?->getValue() ?? null;
+                $data['rank_number'] = $cells['H']?->getValue() ?? null;
+                $data['rank_type'] = $cells['I']?->getValue() ?? null;
+                $data['rank_label'] = $cells['J']?->getValue() ?? null;
+                $data['label'] = $cells['K']?->getValue() ?? null;
+                $data['detail_text'] = $cells['L']?->getValue() ?? null;
 
                 // Stop if all cells are empty
                 if (!$data['title'] && !$data['heading'] && !$data['year'] && !$data['rank_number']) {
@@ -109,7 +114,7 @@ class BulkImportVideoItemController extends Controller
 
             // Process each row
             foreach ($worksheet->getRowIterator(2) as $row) {
-                $cellIterator = $row->getCellIterator('A', 'G');
+                $cellIterator = $row->getCellIterator('A', 'L');
                 $cellIterator->setIterateOnlyExistingCells(false);
 
                 $data = [];
@@ -117,12 +122,17 @@ class BulkImportVideoItemController extends Controller
 
                 // Map columns
                 $data['title'] = $cells['A']?->getValue() ?? null;
-                $data['heading'] = $cells['B']?->getValue() ?? null;
-                $data['year'] = $cells['C']?->getValue() ?? null;
-                $data['rank_number'] = $cells['D']?->getValue() ?? null;
-                $data['rank_type'] = $cells['E']?->getValue() ?? null;
-                $data['detail_text'] = $cells['F']?->getValue() ?? null;
-                $data['country'] = $cells['G']?->getValue() ?? null;
+                $data['subtitle'] = $cells['B']?->getValue() ?? null;
+                $data['heading'] = $cells['C']?->getValue() ?? null;
+                $data['icon'] = $cells['D']?->getValue() ?? null;
+                $data['country'] = $cells['E']?->getValue() ?? null;
+                $data['year'] = $cells['F']?->getValue() ?? null;
+                $data['year_range'] = $cells['G']?->getValue() ?? null;
+                $data['rank_number'] = $cells['H']?->getValue() ?? null;
+                $data['rank_type'] = $cells['I']?->getValue() ?? null;
+                $data['rank_label'] = $cells['J']?->getValue() ?? null;
+                $data['label'] = $cells['K']?->getValue() ?? null;
+                $data['detail_text'] = $cells['L']?->getValue() ?? null;
 
                 // Stop if all cells are empty
                 if (!$data['title'] && !$data['heading'] && !$data['year'] && !$data['rank_number']) {
@@ -144,12 +154,17 @@ class BulkImportVideoItemController extends Controller
                     'video_id' => $videoId,
                     'sequence' => $nextSequence,
                     'title' => $data['title'],
+                    'subtitle' => $data['subtitle'] ?? null,
                     'heading' => $data['heading'] ?? null,
+                    'icon' => $data['icon'] ?? null,
+                    'country' => $data['country'] ?? null,
                     'year' => $data['year'] ? (int)$data['year'] : null,
+                    'year_range' => $data['year_range'] ?? null,
                     'rank_number' => $data['rank_number'] ? (int)$data['rank_number'] : null,
                     'rank_type' => $data['rank_type'] ?? null,
+                    'rank_label' => $data['rank_label'] ?? null,
+                    'label' => $data['label'] ?? null,
                     'detail_text' => $data['detail_text'] ?? null,
-                    'country' => $data['country'] ?? null,
                     'media_url' => null, // Skip images for now
                 ];
 
@@ -195,50 +210,60 @@ class BulkImportVideoItemController extends Controller
             $sheet = $spreadsheet->getActiveSheet();
             $sheet->setTitle('Video Items');
 
-            // Set headers in row 1 - SIMPLE VERSION
+            // Set headers in row 1
             $sheet->setCellValue('A1', 'Title');
-            $sheet->setCellValue('B1', 'Heading');
-            $sheet->setCellValue('C1', 'Year');
-            $sheet->setCellValue('D1', 'Rank Number');
-            $sheet->setCellValue('E1', 'Rank Type');
-            $sheet->setCellValue('F1', 'Detail Text');
-            $sheet->setCellValue('G1', 'Country');
+            $sheet->setCellValue('B1', 'Subtitle');
+            $sheet->setCellValue('C1', 'Heading');
+            $sheet->setCellValue('D1', 'Icon/Emoji');
+            $sheet->setCellValue('E1', 'Country');
+            $sheet->setCellValue('F1', 'Year');
+            $sheet->setCellValue('G1', 'Year Range');
+            $sheet->setCellValue('H1', 'Rank Number');
+            $sheet->setCellValue('I1', 'Rank Type');
+            $sheet->setCellValue('J1', 'Rank Label');
+            $sheet->setCellValue('K1', 'Label');
+            $sheet->setCellValue('L1', 'Detail Text');
 
             // Add sample data in row 2
-            $sheet->setCellValue('A2', 'Titanic');
-            $sheet->setCellValue('B2', 'Greatest Ship');
-            $sheet->setCellValue('C2', 1997);
-            $sheet->setCellValue('D2', 1);
-            $sheet->setCellValue('E2', 'Movie');
-            $sheet->setCellValue('F2', 'Sank in 1912');
-            $sheet->setCellValue('G2', 'USA');
+            $sheet->setCellValue('A2', 'Cristiano Ronaldo');
+            $sheet->setCellValue('B2', 'Portugal');
+            $sheet->setCellValue('C2', 'The GOAT');
+            $sheet->setCellValue('D2', '⚽');
+            $sheet->setCellValue('E2', 'Portugal');
+            $sheet->setCellValue('F2', 2002);
+            $sheet->setCellValue('G2', '2002-Present');
+            $sheet->setCellValue('H2', 1);
+            $sheet->setCellValue('I2', 'Goals');
+            $sheet->setCellValue('J2', 'Goals');
+            $sheet->setCellValue('K2', 'Goals');
+            $sheet->setCellValue('L2', 'Top scorer of all time');
 
-            // Make header row BOLD (no colors, just bold)
-            $sheet->getStyle('A1:G1')->getFont()->setBold(true);
-            $sheet->getStyle('A1:G1')->getAlignment()->setHorizontal('center');
+            // Make header row BOLD
+            $sheet->getStyle('A1:L1')->getFont()->setBold(true);
+            $sheet->getStyle('A1:L1')->getAlignment()->setHorizontal('center');
 
             // Set column widths
             $sheet->getColumnDimension('A')->setWidth(25);
             $sheet->getColumnDimension('B')->setWidth(20);
-            $sheet->getColumnDimension('C')->setWidth(10);
-            $sheet->getColumnDimension('D')->setWidth(15);
+            $sheet->getColumnDimension('C')->setWidth(20);
+            $sheet->getColumnDimension('D')->setWidth(12);
             $sheet->getColumnDimension('E')->setWidth(15);
-            $sheet->getColumnDimension('F')->setWidth(30);
+            $sheet->getColumnDimension('F')->setWidth(10);
             $sheet->getColumnDimension('G')->setWidth(15);
+            $sheet->getColumnDimension('H')->setWidth(15);
+            $sheet->getColumnDimension('I')->setWidth(15);
+            $sheet->getColumnDimension('J')->setWidth(15);
+            $sheet->getColumnDimension('K')->setWidth(15);
+            $sheet->getColumnDimension('L')->setWidth(30);
 
-            // Create writer
+            // Create writer and save to stream
             $writer = new Xlsx($spreadsheet);
-
-            // Set headers for download
-            header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-            header('Content-Disposition: attachment; filename="video_items_template.xlsx"');
-            header('Cache-Control: max-age=0');
-            header('Pragma: public');
-            header('Expires: 0');
-
-            // Output file
-            $writer->save('php://output');
-            exit;
+            
+            return response()->streamDownload(function() use ($writer) {
+                $writer->save('php://output');
+            }, 'video_items_template.xlsx', [
+                'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            ]);
 
         } catch (\Exception $e) {
             return response()->json([
@@ -274,6 +299,21 @@ class BulkImportVideoItemController extends Controller
             }
         }
 
+        // Subtitle max 255
+        if (!empty($data['subtitle']) && strlen($data['subtitle']) > 255) {
+            $errors[] = 'Subtitle must be max 255 characters';
+        }
+
+        // Icon max 10
+        if (!empty($data['icon']) && strlen($data['icon']) > 10) {
+            $errors[] = 'Icon must be max 10 characters';
+        }
+
+        // Year Range max 50
+        if (!empty($data['year_range']) && strlen($data['year_range']) > 50) {
+            $errors[] = 'Year Range must be max 50 characters';
+        }
+
         // Rank number should be numeric
         if (!empty($data['rank_number']) && !is_numeric($data['rank_number'])) {
             $errors[] = 'Rank Number must be numeric';
@@ -282,6 +322,16 @@ class BulkImportVideoItemController extends Controller
         // Rank type max 50
         if (!empty($data['rank_type']) && strlen($data['rank_type']) > 50) {
             $errors[] = 'Rank Type must be max 50 characters';
+        }
+
+        // Rank label max 100
+        if (!empty($data['rank_label']) && strlen($data['rank_label']) > 100) {
+            $errors[] = 'Rank Label must be max 100 characters';
+        }
+
+        // Label max 100
+        if (!empty($data['label']) && strlen($data['label']) > 100) {
+            $errors[] = 'Label must be max 100 characters';
         }
 
         // Detail text is optional

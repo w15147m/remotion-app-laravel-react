@@ -112,34 +112,18 @@ export default function VideoItemsBulkUpload({ videoId, onSuccess }) {
     }
   };
 
-const downloadTemplate = async () => {
-  try {
-    const response = await fetch('/api/video-items/template', {
-      method: 'GET',
-      headers: {
-        'X-CSRF-TOKEN': getCsrfToken(),
-        'Accept': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-      },
-    });
+  const downloadTemplate = (type) => {
+    const filename = type === 'footballers'
+      ? 'video_items_template_footballers.xlsx'
+      : 'video_items_template_empty.xlsx';
 
-    if (!response.ok) {
-      alert('Failed to download template');
-      return;
-    }
-
-    const blob = await response.blob();
-    const url = window.URL.createObjectURL(blob);
     const link = document.createElement('a');
-    link.href = url;
-    link.download = 'video_items_template.xlsx';
+    link.href = `/templates/${filename}`;
+    link.download = filename;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-  } catch (error) {
-    console.error('Download error:', error);
-    alert('Error downloading template');
-  }
-};
+  };
 
   // Reset form
   const resetForm = () => {
@@ -185,17 +169,28 @@ const downloadTemplate = async () => {
                 {/* Template Download */}
                 <div className="bg-blue-50 dark:bg-blue-950 p-3 rounded-lg">
                   <p className="text-sm text-blue-900 dark:text-blue-100 mb-2">
-                    Download the template to see the correct format.
+                    Download a template to see the correct format.
                   </p>
-                  <Button
-                    onClick={downloadTemplate}
-                    variant="outline"
-                    size="sm"
-                    className="gap-2"
-                  >
-                    <Download className="w-4 h-4" />
-                    Download Template
-                  </Button>
+                  <div className="flex flex-wrap gap-2">
+                    <Button
+                      onClick={() => downloadTemplate('empty')}
+                      variant="outline"
+                      size="sm"
+                      className="gap-2"
+                    >
+                      <Download className="w-4 h-4" />
+                      Empty Template
+                    </Button>
+                    <Button
+                      onClick={() => downloadTemplate('footballers')}
+                      variant="outline"
+                      size="sm"
+                      className="gap-2"
+                    >
+                      <Download className="w-4 h-4" />
+                      Sample (Top 20 Footballers)
+                    </Button>
+                  </div>
                 </div>
 
                 {/* File Upload Area */}
@@ -261,7 +256,9 @@ const downloadTemplate = async () => {
                     <thead className="sticky top-0">
                       <tr className="bg-gray-100 dark:bg-gray-800">
                         <th className="px-2 py-2 text-left font-medium">Title</th>
-                        <th className="px-2 py-2 text-left font-medium">Heading</th>
+                        <th className="px-2 py-2 text-left font-medium">Subtitle</th>
+                        <th className="px-2 py-2 text-left font-medium">Icon</th>
+                        <th className="px-2 py-2 text-left font-medium">Country</th>
                         <th className="px-2 py-2 text-left font-medium">Year</th>
                         <th className="px-2 py-2 text-left font-medium">Rank</th>
                       </tr>
@@ -269,8 +266,10 @@ const downloadTemplate = async () => {
                     <tbody>
                       {preview.slice(0, 15).map((item, idx) => (
                         <tr key={idx} className="border-b hover:bg-gray-50 dark:hover:bg-gray-900">
-                          <td className="px-2 py-2 truncate">{item.title}</td>
-                          <td className="px-2 py-2 truncate">{item.heading || '—'}</td>
+                          <td className="px-2 py-2 truncate max-w-[150px]" title={item.title}>{item.title}</td>
+                          <td className="px-2 py-2 truncate max-w-[100px]" title={item.subtitle}>{item.subtitle || '—'}</td>
+                          <td className="px-2 py-2">{item.icon || '—'}</td>
+                          <td className="px-2 py-2">{item.country || '—'}</td>
                           <td className="px-2 py-2">{item.year || '—'}</td>
                           <td className="px-2 py-2">{item.rank_number || '—'}</td>
                         </tr>
