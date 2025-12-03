@@ -131,7 +131,7 @@ class VideoItemController extends Controller
             $video_item->update(['media_url' => $imageName]);
         }
 
-        return $this->showVideoItems($validated['video_id']);
+        return redirect('/video/Items/' . $validated['video_id']);
     }
 
     public function edit($id)

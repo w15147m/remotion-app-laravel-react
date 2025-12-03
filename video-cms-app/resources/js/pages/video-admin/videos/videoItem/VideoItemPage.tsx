@@ -98,7 +98,8 @@ export default function VideoItemPage({ video, video_items: initialItems }: Vide
         {
           preserveScroll: true,
           onSuccess: () => {
-            // Reload to get the updated image
+            // Inertia will automatically update the page content from the redirect response
+            console.log('Image updated successfully');
             window.location.reload();
           },
           onError: (errors) => {
