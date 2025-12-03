@@ -25,7 +25,6 @@ class VideoItem extends Model
         'label',
         'detail_text',
         'media_url',
-        'type',
         'data',
     ];
 

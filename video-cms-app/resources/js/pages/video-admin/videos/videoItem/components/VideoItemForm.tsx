@@ -31,7 +31,6 @@ interface VideoItemFormData {
     detail_text: string;
     image_url: string;
     video_id: number;
-    type: string;
 }
 
 interface VideoItem {
@@ -51,7 +50,6 @@ interface VideoItem {
     label: string | null;
     detail_text: string | null;
     image_url: string | null;
-    type: string | null;
 }
 
 export default function VideoItemForm({
@@ -81,7 +79,6 @@ export default function VideoItemForm({
         detail_text: videoItem?.detail_text ?? '',
         image_url: videoItem?.image_url ?? '',
         video_id: videoId,
-        type: videoItem?.type ?? 'short',
         gallery: {},
     });
 
@@ -307,22 +304,6 @@ export default function VideoItemForm({
                                     <p className="mt-1 text-sm text-red-500">{errors.label}</p>
                                 )}
                             </div>
-                        </div>
-
-                        <div>
-                            <Label htmlFor="type">Type</Label>
-                            <select
-                                id="type"
-                                value={data.type}
-                                onChange={(e) => setData('type', e.target.value)}
-                                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                            >
-                                <option value="short">Short</option>
-                                <option value="video">Video</option>
-                            </select>
-                            {errors.type && (
-                                <p className="mt-1 text-sm text-red-500">{errors.type}</p>
-                            )}
                         </div>
 
                         <div>

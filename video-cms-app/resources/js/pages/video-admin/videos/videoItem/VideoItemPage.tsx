@@ -90,9 +90,6 @@ export default function VideoItemPage({ video, video_items: initialItems }: Vide
               <th className="px-4 py-3 text-left text-xs font-medium tracking-wider text-neutral-500 uppercase dark:text-neutral-400">
                 Rank
               </th>
-              <th className="px-4 py-3 text-left text-xs font-medium tracking-wider text-neutral-500 uppercase dark:text-neutral-400">
-                Type
-              </th>
 
               <th className="w-32 px-4 py-3 text-center text-xs font-medium tracking-wider text-neutral-500 uppercase dark:text-neutral-400">
                 Actions
@@ -157,16 +154,6 @@ export default function VideoItemPage({ video, video_items: initialItems }: Vide
                     ) : (
                       '—'
                     )}
-                  </td>
-
-                  {/* Type */}
-                  <td className="px-4 py-4">
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${item.type === 'short'
-                        ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
-                        : 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200'
-                      }`}>
-                      {item.type || 'short'}
-                    </span>
                   </td>
 
                   {/* Edit/Delete */}
