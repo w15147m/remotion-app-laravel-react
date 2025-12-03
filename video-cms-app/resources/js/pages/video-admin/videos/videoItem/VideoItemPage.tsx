@@ -52,6 +52,67 @@ export default function VideoItemPage({ video, video_items: initialItems }: Vide
     window.location.reload();
   };
 
+  // Handle inline image upload using temp-image system
+  const handleImageUpload = async (itemId: number, file: File | undefined) => {
+    if (!file) return;
+
+    try {
+      // Step 1: Upload to temp-image endpoint
+      const formData = new FormData();
+      formData.append('image', file);
+
+      const token = document
+        .querySelector('meta[name="csrf-token"]')
+        ?.getAttribute('content');
+
+      const { default: axios } = await import('axios');
+      const response = await axios.post('/temp-image', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          'X-CSRF-TOKEN': token || '',
+        },
+      });
+
+      const { data: tempImageData } = response.data;
+
+      // Step 2: Update the video item with the temp image
+      const { router } = await import('@inertiajs/react');
+
+      // Find the item to get all its data
+      const item = items.find(i => i.id === itemId);
+      if (!item) {
+        alert('Item not found');
+        return;
+      }
+
+      router.put(
+        route('videoItem.update', { videoItem: itemId }),
+        {
+          video_id: video.id,
+          gallery: {
+            id: tempImageData.id,
+            image_url: tempImageData.image_url,
+            name: tempImageData.name,
+          },
+        },
+        {
+          preserveScroll: true,
+          onSuccess: () => {
+            // Reload to get the updated image
+            window.location.reload();
+          },
+          onError: (errors) => {
+            console.error('Update failed:', errors);
+            alert('Failed to update image. Please try again.');
+          },
+        }
+      );
+    } catch (error: any) {
+      console.error('Upload error:', error);
+      alert('Failed to upload image: ' + (error.response?.data?.message || error.message));
+    }
+  };
+
   return (
     <CommonLayout pageInfo={pageInfo}>
       <Head title={`Items for: ${video.title}`} />
@@ -113,7 +174,21 @@ export default function VideoItemPage({ video, video_items: initialItems }: Vide
                         className="w-20 h-12 object-cover rounded-md border border-neutral-200 dark:border-neutral-700"
                       />
                     ) : (
-                      <span className="text-xs text-neutral-400">No image</span>
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="file"
+                          id={`image-upload-${item.id}`}
+                          accept="image/*"
+                          className="hidden"
+                          onChange={(e) => handleImageUpload(item.id, e.target.files?.[0])}
+                        />
+                        <label
+                          htmlFor={`image-upload-${item.id}`}
+                          className="cursor-pointer px-3 py-1.5 text-xs font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 border border-blue-300 dark:border-blue-600 rounded-md hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
+                        >
+                          Upload Image
+                        </label>
+                      </div>
                     )}
                   </td>
 

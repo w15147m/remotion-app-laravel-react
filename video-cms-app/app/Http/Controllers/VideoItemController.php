@@ -107,7 +107,23 @@ class VideoItemController extends Controller
             'data' => 'nullable|array',
         ]);
 
-        $video_item->update($validated);
+        // Debug: Log what we're getting
+        \Log::info('Update request data:', $request->all());
+        \Log::info('Validated data:', $validated);
+
+        // Only update fields that are actually present in the request
+        $updateData = [];
+        foreach ($validated as $key => $value) {
+            if ($request->has($key) && $key !== 'video_id' && $key !== 'data') {
+                $updateData[$key] = $value;
+            }
+        }
+        
+        \Log::info('Fields to update:', $updateData);
+        
+        if (!empty($updateData)) {
+            $video_item->update($updateData);
+        }
 
         if ($request->gallery) {
             $this->deleteImage($oldImage);
