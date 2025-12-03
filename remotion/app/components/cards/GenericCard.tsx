@@ -5,15 +5,15 @@ import { loadFont } from "@remotion/google-fonts/Roboto";
 const { fontFamily } = loadFont();
 
 export interface GenericCardData {
-  title: string;
-  subtitle?: string;
-  icon?: string;
-  country?: string;
-  yearRange?: string;
-  label?: string;
-  rankNumber?: number;
-  rankLabel?: string;
-  mediaUrl?: string;
+  title: string | null;
+  subtitle?: string | null;
+  icon?: string | null;
+  country?: string | null;
+  yearRange?: string | null;
+  label?: string | null;
+  rankNumber?: number | null;
+  rankLabel?: string | null;
+  mediaUrl?: string | null;
 }
 
 interface GenericCardProps {
@@ -168,11 +168,11 @@ export const GenericCard: React.FC<GenericCardProps> = ({ data, index }) => {
             fontWeight: "bold",
           }}
         >
-          {data.title}
+          {data.title || "Untitled"}
         </div>
 
         {/* Subtitle (Country/Region/etc) */}
-        {data.subtitle && (
+        {data.subtitle && data.subtitle !== null && (
           <div
             style={{
               backgroundColor: "#e0e0e0",
@@ -189,7 +189,7 @@ export const GenericCard: React.FC<GenericCardProps> = ({ data, index }) => {
         )}
 
         {/* Label (Death/Goals/etc) */}
-        {data.label && (
+        {data.label && data.label !== null && (
           <div
             style={{
               backgroundColor: "#999",
@@ -206,7 +206,7 @@ export const GenericCard: React.FC<GenericCardProps> = ({ data, index }) => {
         )}
 
         {/* Rank (Number + Label) */}
-        {data.rankNumber !== undefined && data.rankLabel && (
+        {data.rankNumber !== undefined && data.rankNumber !== null && data.rankLabel && data.rankLabel !== null && (
           <div
             style={{
               backgroundColor: "#2a2a2a",
