@@ -6,10 +6,10 @@ export default [
 
   // Protected routes - wrapped with ProtectedLayout
   layout("./layouts/ProtectedLayout.tsx", [
-    index("./pages/videos/home.tsx"),
+    index("./pages/videos/table.tsx"),
     route("/short", "./pages/shorts/home.tsx"),
     route("/test", "./pages/test.tsx"),
-    route("/videos-list", "./pages/videos/table.tsx"),
+    route("/video", "./pages/videos/home.tsx"),
   ]),
 
   // API routes (not protected)

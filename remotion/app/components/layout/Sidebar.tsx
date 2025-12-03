@@ -21,8 +21,8 @@ export function DesktopSidebar() {
       <nav className="space-y-1 text-sm">
         <h3 className="mb-2 text-lg font-bold ">Admin Menu</h3>
         <Link
-          className={getLinkClass("/videos-list")}
-          to="/videos-list"
+          className={getLinkClass("/video")}
+          to="/video"
         >
           <span>Videos</span>
         </Link>
@@ -32,7 +32,7 @@ export function DesktopSidebar() {
         >
           <span>Test</span>
         </Link>
-      
+
       </nav>
     </div>
   );
@@ -53,9 +53,9 @@ export function MobileNav() {
 
   return (
     <nav className="flex flex-wrap lg:hidden p-2 items-center justify-start gap-4 text-sm ">
-        <Link
-        className={getLinkClass("/videos-list")}
-        to="/videos-list"
+      <Link
+        className={getLinkClass("/video")}
+        to="/video"
       >
         <span>Videos</span>
       </Link>
@@ -65,7 +65,7 @@ export function MobileNav() {
       >
         <span>Test</span>
       </Link>
-  
+
     </nav>
   );
 }

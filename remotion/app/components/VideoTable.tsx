@@ -53,7 +53,7 @@ export const VideoTable: React.FC<VideoTableProps> = ({ title }) => {
       if (videoType === 'short') {
         navigate('/short');
       } else {
-        navigate('/');
+        navigate('/video');
       }
     } catch (err) {
       console.error('Failed to fetch video items', err);
