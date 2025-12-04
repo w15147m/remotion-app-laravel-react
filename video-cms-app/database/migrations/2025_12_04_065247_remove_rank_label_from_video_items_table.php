@@ -12,9 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('video_items', function (Blueprint $table) {
-            if (!Schema::hasColumn('video_items', 'country')) {
-                $table->string('country', 100)->nullable()->after('year');
-            }
+            $table->dropColumn('rank_label');
         });
     }
 
@@ -24,7 +22,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('video_items', function (Blueprint $table) {
-            $table->dropColumn('country');
+            $table->string('rank_label')->nullable()->after('rank_type');
         });
     }
 };
