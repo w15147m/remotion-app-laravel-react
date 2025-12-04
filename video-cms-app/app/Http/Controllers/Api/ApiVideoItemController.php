@@ -35,7 +35,7 @@ class ApiVideoItemController extends Controller
 
          public function videosItems($video_id)
     {
-        $data = VideoItem::where('video_id',  $video_id)->orderby('created_at', 'DESC')->get();
+        $data = VideoItem::where('video_id',  $video_id)->orderBy('sequence', 'ASC')->get();
         return response()->json(
             [
                 'status' => 200,
