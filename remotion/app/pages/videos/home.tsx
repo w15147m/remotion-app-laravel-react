@@ -65,7 +65,7 @@ export default function Index() {
     }
   };
 
-  const inputProps: z.infer<typeof CompositionProps> & { videoTitle?: string } = useMemo(() => {
+  const inputProps: z.infer<typeof CompositionProps> = useMemo(() => {
     return {
       title: text,
       durationInSeconds,
