@@ -20,6 +20,8 @@ export const InlineImageUpload: React.FC<InlineImageUploadProps> = ({
   onUploadError,
 }) => {
   const [isUploading, setIsUploading] = React.useState(false);
+  const [isPasteReady, setIsPasteReady] = React.useState(false);
+  const containerRef = React.useRef<HTMLDivElement>(null);
 
   const handleImageUpload = async (file: File | null | undefined) => {
     if (!file) {
@@ -90,8 +92,43 @@ export const InlineImageUpload: React.FC<InlineImageUploadProps> = ({
     }
   };
 
+  // Handle paste event
+  const handlePaste = React.useCallback(async (e: ClipboardEvent) => {
+    const items = e.clipboardData?.items;
+    if (!items) return;
+
+    for (let i = 0; i < items.length; i++) {
+      if (items[i].type.indexOf('image') !== -1) {
+        e.preventDefault();
+        const blob = items[i].getAsFile();
+        if (blob) {
+          await handleImageUpload(blob);
+        }
+        break;
+      }
+    }
+  }, [itemId, videoId]);
+
+  // Add paste event listener when container is focused
+  React.useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const pasteHandler = (e: Event) => handlePaste(e as ClipboardEvent);
+
+    container.addEventListener('paste', pasteHandler);
+    return () => container.removeEventListener('paste', pasteHandler);
+  }, [handlePaste]);
+
   return (
-    <div className="flex items-center gap-2">
+    <div
+      ref={containerRef}
+      className="flex items-center gap-2"
+      tabIndex={0}
+      onFocus={() => setIsPasteReady(true)}
+      onBlur={() => setIsPasteReady(false)}
+      title="Click to focus, then paste image (Ctrl+V)"
+    >
       {currentImageUrl ? (
         <div className="relative group">
           <img
@@ -99,6 +136,11 @@ export const InlineImageUpload: React.FC<InlineImageUploadProps> = ({
             alt="Item"
             className="h-20 w-20 rounded-lg object-cover border-2 border-neutral-200 dark:border-neutral-700"
           />
+          {isPasteReady && (
+            <div className="absolute top-0 left-0 right-0 bg-blue-600 text-white text-xs px-2 py-1 rounded-t-lg text-center">
+              Paste ready (Ctrl+V)
+            </div>
+          )}
           <input
             type="file"
             id={`image-upload-${itemId}`}
@@ -110,8 +152,8 @@ export const InlineImageUpload: React.FC<InlineImageUploadProps> = ({
           <label
             htmlFor={`image-upload-${itemId}`}
             className={`absolute bottom-1 right-1 p-1.5 rounded-full transition-all ${isUploading
-              ? 'bg-gray-400 cursor-not-allowed'
-              : 'bg-blue-600 hover:bg-blue-700 cursor-pointer shadow-md hover:shadow-lg'
+                ? 'bg-gray-400 cursor-not-allowed'
+                : 'bg-blue-600 hover:bg-blue-700 cursor-pointer shadow-md hover:shadow-lg'
               }`}
             title={isUploading ? 'Uploading...' : 'Change Image'}
           >
@@ -128,39 +170,46 @@ export const InlineImageUpload: React.FC<InlineImageUploadProps> = ({
           </label>
         </div>
       ) : (
-        <div className="flex items-center">
-          <input
-            type="file"
-            id={`image-upload-${itemId}`}
-            accept="image/*"
-            className="hidden"
-            onChange={(e) => handleImageUpload(e.target.files?.[0])}
-            disabled={isUploading}
-          />
-          <label
-            htmlFor={`image-upload-${itemId}`}
-            className={`inline-flex items-center justify-center px-3 py-2 text-sm font-medium rounded-lg transition-all ${isUploading
-              ? 'bg-gray-100 text-gray-400 border border-gray-300 cursor-not-allowed'
-              : 'bg-blue-600 text-white hover:bg-blue-700 cursor-pointer'
-              }`}
-          >
-            {isUploading ? (
-              <>
-                <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                Uploading...
-              </>
-            ) : (
-              <>
-                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                </svg>
-                Image
-              </>
-            )}
-          </label>
+        <div className="flex flex-col gap-1">
+          {isPasteReady && (
+            <div className="text-xs text-blue-600 dark:text-blue-400 font-medium">
+              📋 Paste ready (Ctrl+V)
+            </div>
+          )}
+          <div className="flex items-center gap-2">
+            <input
+              type="file"
+              id={`image-upload-${itemId}`}
+              accept="image/*"
+              className="hidden"
+              onChange={(e) => handleImageUpload(e.target.files?.[0])}
+              disabled={isUploading}
+            />
+            <label
+              htmlFor={`image-upload-${itemId}`}
+              className={`inline-flex items-center justify-center px-3 py-2 text-sm font-medium rounded-lg transition-all ${isUploading
+                  ? 'bg-gray-100 text-gray-400 border border-gray-300 cursor-not-allowed'
+                  : 'bg-blue-600 text-white hover:bg-blue-700 cursor-pointer'
+                }`}
+            >
+              {isUploading ? (
+                <>
+                  <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Uploading...
+                </>
+              ) : (
+                <>
+                  <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                  </svg>
+                  Image
+                </>
+              )}
+            </label>
+          </div>
         </div>
       )}
     </div>
