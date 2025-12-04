@@ -1,16 +1,19 @@
 import React from "react";
+import { AbsoluteFill, useCurrentFrame, useVideoConfig } from "remotion";
 import {
-  AbsoluteFill,
-  useCurrentFrame,
-  useVideoConfig,
-} from "remotion";
-import { GenericCard, GenericCardData } from "../../../../components/cards/GenericCard";
+  GenericCard,
+  GenericCardData,
+} from "../../../../components/cards/GenericCard";
 
 interface HorizontalScrollProps {
   cardsData?: GenericCardData[];
+  videoTitle?: string;
 }
 
-export const HorizontalScroll: React.FC<HorizontalScrollProps> = ({ cardsData = [] }) => {
+export const HorizontalScroll: React.FC<HorizontalScrollProps> = ({
+  cardsData = [],
+  videoTitle,
+}) => {
   const frame = useCurrentFrame();
   const { width, fps } = useVideoConfig();
   const [isClient, setIsClient] = React.useState(false);
@@ -48,17 +51,32 @@ export const HorizontalScroll: React.FC<HorizontalScrollProps> = ({ cardsData = 
         width: `${numberOfScreens * 100}%`,
       }}
     >
-        <div>
-            asdfasdf
-            asdfasdf
-            asdfasdf
-            asdfasdf
-            asdfasdf
-            asdfasdf
-            asdfasdf
-            asdfasdf
-            asdfasdf
-          </div>
+      <div
+        style={{
+          height: "100%",
+          width: "1720px",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          gap: "40px",
+          padding: "40px",
+          position: "relative",
+          marginLeft: "40px",
+        }}
+      >
+        <h1
+          style={{
+            width: "1000px",
+            textWrap: "auto",
+            fontSize: "94px",
+            textAlign: "center",
+            fontFamily: "cursive",
+            fontWeight: "bolder",
+          }}
+        >
+          {videoTitle}
+        </h1>
+      </div>
       {cardsData.map((cardData, cardIndex) => (
         <div
           key={cardIndex}
@@ -72,11 +90,7 @@ export const HorizontalScroll: React.FC<HorizontalScrollProps> = ({ cardsData = 
             position: "relative",
           }}
         >
-        
-          <GenericCard
-            data={cardData}
-            index={cardIndex}
-          />
+          <GenericCard data={cardData} index={cardIndex} />
         </div>
       ))}
     </AbsoluteFill>

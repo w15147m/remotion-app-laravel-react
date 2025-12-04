@@ -37,6 +37,14 @@ export default function Index() {
     return [];
   });
 
+  // Load video title from sessionStorage
+  const [videoTitle, setVideoTitle] = useState<string>(() => {
+    if (typeof window !== "undefined") {
+      return sessionStorage.getItem("videoTitle") || "";
+    }
+    return "";
+  });
+
   // On mount, load data from data.js and save to sessionStorage
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -57,14 +65,15 @@ export default function Index() {
     }
   };
 
-  const inputProps: z.infer<typeof CompositionProps> = useMemo(() => {
+  const inputProps: z.infer<typeof CompositionProps> & { videoTitle?: string } = useMemo(() => {
     return {
       title: text,
       durationInSeconds,
       audioFileName: audioFileName || undefined,
       cardsData: cardsData,
+      videoTitle: videoTitle,
     };
-  }, [text, durationInSeconds, audioFileName, cardsData]);
+  }, [text, durationInSeconds, audioFileName, cardsData, videoTitle]);
 
   const durationInFrames = useMemo(() => {
     return Math.round(durationInSeconds * COMPOSITION_FPS);
