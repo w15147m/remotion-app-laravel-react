@@ -32,15 +32,11 @@ return new class extends Migration
             // Ranking fields
             $table->integer('rank_number')->nullable();
             $table->string('rank_type', 50)->nullable();
-            $table->string('rank_label', 100)->nullable()->comment('Label for ranking (e.g., "Goals")');
             $table->string('label', 100)->nullable()->comment('General label field');
             
             // Content fields
             $table->text('detail_text')->nullable();
             $table->string('media_url')->nullable();
-            
-            // Type field for short/video
-            $table->enum('type', ['short', 'video'])->default('short')->comment('Item type: short or video');
             
             // Flexible data storage
             $table->json('data')->nullable();
