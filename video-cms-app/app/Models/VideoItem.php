@@ -21,7 +21,6 @@ class VideoItem extends Model
         'year_range',
         'rank_number',
         'rank_type',
-        'rank_label',
         'label',
         'detail_text',
         'media_url',

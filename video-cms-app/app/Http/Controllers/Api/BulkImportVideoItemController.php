@@ -50,7 +50,6 @@ class BulkImportVideoItemController extends Controller
                 $data['year_range'] = $cells['G']?->getValue() ?? null;
                 $data['rank_number'] = $cells['H']?->getValue() ?? null;
                 $data['rank_type'] = $cells['I']?->getValue() ?? null;
-                $data['rank_label'] = $cells['J']?->getValue() ?? null;
                 $data['label'] = $cells['K']?->getValue() ?? null;
                 $data['detail_text'] = $cells['L']?->getValue() ?? null;
 
@@ -103,7 +102,6 @@ class BulkImportVideoItemController extends Controller
             'items.*.year_range' => 'nullable|string|max:50',
             'items.*.rank_number' => 'nullable|integer',
             'items.*.rank_type' => 'nullable|string|max:50',
-            'items.*.rank_label' => 'nullable|string|max:100',
             'items.*.label' => 'nullable|string|max:100',
             'items.*.detail_text' => 'nullable|string|max:5000',
         ]);
@@ -135,7 +133,6 @@ class BulkImportVideoItemController extends Controller
                     'year_range' => $data['year_range'] ?? null,
                     'rank_number' => $data['rank_number'] ?? null,
                     'rank_type' => $data['rank_type'] ?? null,
-                    'rank_label' => $data['rank_label'] ?? null,
                     'label' => $data['label'] ?? null,
                     'detail_text' => $data['detail_text'] ?? null,
                     'media_url' => null, // Skip images for now
@@ -191,9 +188,8 @@ class BulkImportVideoItemController extends Controller
             $sheet->setCellValue('G1', 'Year Range');
             $sheet->setCellValue('H1', 'Rank Number');
             $sheet->setCellValue('I1', 'Rank Type');
-            $sheet->setCellValue('J1', 'Rank Label');
-            $sheet->setCellValue('K1', 'Label');
-            $sheet->setCellValue('L1', 'Detail Text');
+            $sheet->setCellValue('J1', 'Label');
+            $sheet->setCellValue('K1', 'Detail Text');
 
             // Add sample data in row 2
             $sheet->setCellValue('A2', 'Cristiano Ronaldo');
@@ -206,8 +202,7 @@ class BulkImportVideoItemController extends Controller
             $sheet->setCellValue('H2', 1);
             $sheet->setCellValue('I2', 'Goals');
             $sheet->setCellValue('J2', 'Goals');
-            $sheet->setCellValue('K2', 'Goals');
-            $sheet->setCellValue('L2', 'Top scorer of all time');
+            $sheet->setCellValue('K2', 'Top scorer of all time');
 
             // Make header row BOLD
             $sheet->getStyle('A1:L1')->getFont()->setBold(true);
@@ -293,11 +288,6 @@ class BulkImportVideoItemController extends Controller
         // Rank type max 50
         if (!empty($data['rank_type']) && strlen($data['rank_type']) > 50) {
             $errors[] = 'Rank Type must be max 50 characters';
-        }
-
-        // Rank label max 100
-        if (!empty($data['rank_label']) && strlen($data['rank_label']) > 100) {
-            $errors[] = 'Rank Label must be max 100 characters';
         }
 
         // Label max 100

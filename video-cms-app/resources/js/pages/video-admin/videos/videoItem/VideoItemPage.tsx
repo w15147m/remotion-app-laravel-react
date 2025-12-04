@@ -21,7 +21,6 @@ interface VideoItem {
   year_range: string | null;
   rank_number: number | null;
   rank_type: string | null;
-  rank_label: string | null;
   label: string | null;
   detail_text: string | null;
   type: string | null;
@@ -225,7 +224,7 @@ export default function VideoItemPage({ video, video_items: initialItems }: Vide
                     {item.rank_number ? (
                       <>
                         #{item.rank_number}{' '}
-                        <span className="text-xs text-neutral-400">({item.rank_label || item.label || 'N/A'})</span>
+                        <span className="text-xs text-neutral-400">({item.rank_type || item.label || 'N/A'})</span>
                       </>
                     ) : (
                       '—'

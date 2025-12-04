@@ -64,7 +64,6 @@ export default function VideoItemsBulkUpload({ videoId, onSuccess }) {
           year_range: row[6] || null,
           rank_number: row[7] ? parseInt(row[7]) : null,
           rank_type: row[8] || null,
-          rank_label: row[9] || null,
           label: row[10] || null,
           detail_text: row[11] || null,
         };

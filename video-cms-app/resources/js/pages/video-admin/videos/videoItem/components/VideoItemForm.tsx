@@ -26,7 +26,6 @@ interface VideoItemFormData {
     year_range: string;
     rank_number: string;
     rank_type: string;
-    rank_label: string;
     label: string;
     detail_text: string;
     image_url: string;
@@ -46,7 +45,6 @@ interface VideoItem {
     year_range: string | null;
     rank_number: number | null;
     rank_type: string | null;
-    rank_label: string | null;
     label: string | null;
     detail_text: string | null;
     image_url: string | null;
@@ -74,7 +72,6 @@ export default function VideoItemForm({
         year_range: videoItem?.year_range ?? '',
         rank_number: videoItem?.rank_number?.toString() ?? '',
         rank_type: videoItem?.rank_type ?? '',
-        rank_label: videoItem?.rank_label ?? '',
         label: videoItem?.label ?? '',
         detail_text: videoItem?.detail_text ?? '',
         image_url: videoItem?.image_url ?? '',
@@ -238,21 +235,6 @@ export default function VideoItemForm({
                                     <p className="mt-1 text-sm text-red-500">
                                         {errors.rank_number}
                                     </p>
-                                )}
-                            </div>
-
-                            <div>
-                                <Label htmlFor="rank_label">Rank Label</Label>
-                                <Input
-                                    id="rank_label"
-                                    type="text"
-                                    value={data.rank_label}
-                                    onChange={(e) => setData('rank_label', e.target.value)}
-                                    className={errors.rank_label ? 'border-red-500' : ''}
-                                    placeholder="Goals"
-                                />
-                                {errors.rank_label && (
-                                    <p className="mt-1 text-sm text-red-500">{errors.rank_label}</p>
                                 )}
                             </div>
                         </div>
