@@ -17,6 +17,7 @@ export const CompositionProps = z.object({
   durationInSeconds: z.number().positive(),
   audioFileName: z.string().optional(),
   cardsData: z.array(GenericCardData).optional(),
+  videoTitle: z.string().optional(),
 });
 
 export const defaultMyCompProps: z.infer<typeof CompositionProps> = {
@@ -24,6 +25,7 @@ export const defaultMyCompProps: z.infer<typeof CompositionProps> = {
   durationInSeconds: 7,
   audioFileName: "deep.mp3",
   cardsData: [],
+  videoTitle: "",
 };
 
 

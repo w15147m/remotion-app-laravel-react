@@ -66,9 +66,10 @@ export const HorizontalScroll: React.FC<HorizontalScrollProps> = ({
       >
         <h1
           style={{
-            width: "1000px",
+                color: '#ff9000',
+            width: "1400px",
             textWrap: "auto",
-            fontSize: "94px",
+            fontSize: "154px",
             textAlign: "center",
             fontFamily: "cursive",
             fontWeight: "bolder",

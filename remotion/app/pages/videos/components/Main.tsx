@@ -15,7 +15,7 @@ const container: React.CSSProperties = {
   backgroundColor: "white",
 };
 
-export const Main = ({ title, audioFileName, cardsData, videoTitle }: z.infer<typeof CompositionProps> & { videoTitle?: string }) => {
+export const Main = ({ title, audioFileName, cardsData, videoTitle }: z.infer<typeof CompositionProps>) => {
   const { fps } = useVideoConfig();
 
   return (
