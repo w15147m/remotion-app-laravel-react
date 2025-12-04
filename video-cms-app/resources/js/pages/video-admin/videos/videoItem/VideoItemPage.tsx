@@ -195,7 +195,15 @@ export default function VideoItemPage({ video, video_items: initialItems }: Vide
                   {/* Title + Subtitle */}
                   <td className="px-4 py-4">
                     <div className="text-sm font-semibold text-neutral-900 dark:text-neutral-100">
-                      {item.title || 'Untitled'}
+                      <a
+                        href={`https://www.google.com/search?q=${encodeURIComponent(item.title || 'Untitled')}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="hover:text-blue-600 dark:hover:text-blue-400 hover:underline cursor-pointer transition-colors"
+                        title="Search on Google"
+                      >
+                        {item.title || 'Untitled'}
+                      </a>
                     </div>
                     {item.subtitle && (
                       <div className="text-xs text-neutral-500 dark:text-neutral-400">

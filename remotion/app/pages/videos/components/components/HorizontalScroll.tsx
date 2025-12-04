@@ -48,6 +48,17 @@ export const HorizontalScroll: React.FC<HorizontalScrollProps> = ({ cardsData = 
         width: `${numberOfScreens * 100}%`,
       }}
     >
+        <div>
+            asdfasdf
+            asdfasdf
+            asdfasdf
+            asdfasdf
+            asdfasdf
+            asdfasdf
+            asdfasdf
+            asdfasdf
+            asdfasdf
+          </div>
       {cardsData.map((cardData, cardIndex) => (
         <div
           key={cardIndex}
@@ -61,6 +72,7 @@ export const HorizontalScroll: React.FC<HorizontalScrollProps> = ({ cardsData = 
             position: "relative",
           }}
         >
+        
           <GenericCard
             data={cardData}
             index={cardIndex}
