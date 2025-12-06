@@ -1,5 +1,5 @@
 import React from "react";
-import { AbsoluteFill, useCurrentFrame, useVideoConfig } from "remotion";
+import { AbsoluteFill, useCurrentFrame, useVideoConfig, interpolate, Easing } from "remotion";
 import {
   GenericCard,
   GenericCardData,
@@ -15,85 +15,99 @@ export const HorizontalScroll: React.FC<HorizontalScrollProps> = ({
   videoTitle,
 }) => {
   const frame = useCurrentFrame();
-  const { width, fps } = useVideoConfig();
-  const [isClient, setIsClient] = React.useState(false);
+  const { fps, durationInFrames } = useVideoConfig();
 
-  // Ensure client-side rendering to avoid hydration mismatch
-  React.useEffect(() => {
-    setIsClient(true);
-  }, []);
+  // FIX: "Too Fast"
+  // Instead of a Physics Spring (which finishes in ~1-2 seconds),
+  // We use the ENTIRE duration of the video clip to scroll.
+  // This ensures it moves as slowly as possible while still showing everything.
 
-  const numberOfScreens = cardsData.length || 1;
+  // 1. delayed start to let the viewer settle
+  const delay = 15;
+  const activeFrame = Math.max(0, frame - delay);
+  const duration = Math.max(1, durationInFrames - delay - 30); // Buffer at end
 
-  // Scroll speed: move to next screen every N seconds
-  const secondsPerScreen = 80;
-  const speedPerFrame = 100 / (secondsPerScreen * fps);
+  // 2. The scroll animation
+  // We want to scroll from 0 to roughly end of content
+  // We estimate width again, or just scroll a significant amount
+  const progress = interpolate(
+    activeFrame,
+    [0, duration],
+    [0, 1],
+    {
+      // "Cinematic" Easing: Starts slow, moves steady, stops slow.
+      easing: Easing.bezier(0.25, 0.1, 0.25, 1.0),
+      extrapolateLeft: "clamp",
+      extrapolateRight: "clamp",
+    }
+  );
 
-  const xPercent = -frame * speedPerFrame;
+  // Calculate distance
+  const totalWidthEstimate = 1800 + (cardsData.length * 600);
+  // We scroll until the end, leaving some margin
+  const scrollDistance = totalWidthEstimate - 1200;
 
-  // Don't render until client-side to avoid hydration issues
-  if (!isClient) {
-    return (
-      <AbsoluteFill
-        style={{
-          background: "linear-gradient(135deg, #0a4d4e 0%, #1a1a2e 100%)",
-        }}
-      />
-    );
-  }
+  const xScroll = progress * -scrollDistance;
 
   return (
     <AbsoluteFill
       style={{
         background: "linear-gradient(135deg, #0a4d4e 0%, #1a1a2e 100%)",
         flexDirection: "row",
-        transform: `translateX(${xPercent}%)`,
-        width: `${numberOfScreens * 100}%`,
+        alignItems: "center",
+        paddingLeft: "100px",
       }}
     >
       <div
         style={{
-          height: "100%",
-          width: "1720px",
           display: "flex",
-          justifyContent: "center",
+          flexDirection: "row",
           alignItems: "center",
-          gap: "40px",
-          padding: "40px",
-          position: "relative",
-          marginLeft: "40px",
+          // Hardware Accelerated Layer
+          transform: `translateX(${xScroll}px) translateZ(0)`,
+          willChange: "transform",
         }}
       >
-        <h1
-          style={{
-                color: '#ff9000',
-            width: "1400px",
-            textWrap: "auto",
-            fontSize: "154px",
-            textAlign: "center",
-            fontFamily: "cursive",
-            fontWeight: "bolder",
-          }}
-        >
-          {videoTitle}
-        </h1>
-      </div>
-      {cardsData.map((cardData, cardIndex) => (
+        {/* Title Group - Staggers in slightly differently? No, keep it simple and solid for now. */}
         <div
-          key={cardIndex}
           style={{
-            height: "100%",
+            minWidth: "1720px",
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
-            gap: "40px",
-            padding: "40px",
-            position: "relative",
+            marginRight: "40px",
           }}
         >
-          <GenericCard data={cardData} index={cardIndex} />
+          <h1
+            style={{
+              color: '#ff9000',
+              fontSize: "154px",
+              textAlign: "center",
+              fontFamily: "cursive",
+              fontWeight: "bolder",
+              margin: 0,
+              whiteSpace: "nowrap",
+            }}
+          >
+            {videoTitle}
+          </h1>
         </div>
-      ))}
+
+        {/* Cards */}
+        {cardsData.map((cardData, cardIndex) => (
+          <div
+            key={cardIndex}
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              marginRight: "80px",
+            }}
+          >
+            <GenericCard data={cardData} index={cardIndex} />
+          </div>
+        ))}
+      </div>
     </AbsoluteFill>
   );
 };
