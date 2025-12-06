@@ -15,7 +15,7 @@ export const HorizontalScroll: React.FC<HorizontalScrollProps> = ({
   videoTitle,
 }) => {
   const frame = useCurrentFrame();
-  const { durationInFrames } = useVideoConfig();
+  const { width, fps } = useVideoConfig();
   const [isClient, setIsClient] = React.useState(false);
 
   // Ensure client-side rendering to avoid hydration mismatch
@@ -23,15 +23,11 @@ export const HorizontalScroll: React.FC<HorizontalScrollProps> = ({
     setIsClient(true);
   }, []);
 
-  const numberOfScreens = (cardsData.length || 0) + 1;
+  const numberOfScreens = cardsData.length || 1;
 
-  // Scroll speed: move to show all screens within duration
-  // We want to end with the last screen visible.
-  // The total width is numberOfScreens * 100% of the parent.
-  // We want to shift by (numberOfScreens - 1) screens.
-  // In percentage of the element width, that is (numberOfScreens - 1) / numberOfScreens * 100.
-  const totalScrollPercent = ((numberOfScreens - 1) / numberOfScreens) * 100;
-  const speedPerFrame = totalScrollPercent / durationInFrames;
+  // Scroll speed: move to next screen every N seconds
+  const secondsPerScreen = 80;
+  const speedPerFrame = 100 / (secondsPerScreen * fps);
 
   const xPercent = -frame * speedPerFrame;
 
@@ -70,7 +66,7 @@ export const HorizontalScroll: React.FC<HorizontalScrollProps> = ({
       >
         <h1
           style={{
-            color: '#ff9000',
+                color: '#ff9000',
             width: "1400px",
             textWrap: "auto",
             fontSize: "154px",
