@@ -56,13 +56,13 @@ export const CarouselAnimation: React.FC<CarouselAnimationProps> = ({
 
   // Get card style based on level with smooth transitions
   const getCardStyle = (level: number) => {
-    // Base styles for each level - OPTIMIZED FOR VIDEO (fits in frame)
+    // Base styles for each level - MAXIMIZED HEIGHT FOR VIDEO
     const levelStyles = {
-      '-2': { height: 500, width: 367, left: 1300, opacity: 0.6, zIndex: 1 },
-      '-1': { height: 600, width: 433, left: 1000, opacity: 0.8, zIndex: 2 },
-      '0': { height: 650, width: 500, left: 600, opacity: 1, zIndex: 3 },
-      '1': { height: 600, width: 433, left: 253, opacity: 0.8, zIndex: 2 },
-      '2': { height: 500, width: 367, left: -40, opacity: 0.6, zIndex: 1 },
+      '-2': { height: 750, width: 550, left: 1300, opacity: 0.6, zIndex: 1 },
+      '-1': { height: 880, width: 635, left: 1000, opacity: 0.8, zIndex: 2 },
+      '0': { height: 950, width: 730, left: 600, opacity: 1, zIndex: 3 },
+      '1': { height: 880, width: 635, left: 253, opacity: 0.8, zIndex: 2 },
+      '2': { height: 750, width: 550, left: -40, opacity: 0.6, zIndex: 1 },
     };
 
     const currentStyle = levelStyles[level.toString() as keyof typeof levelStyles];
@@ -100,7 +100,7 @@ export const CarouselAnimation: React.FC<CarouselAnimationProps> = ({
         style={{
           position: "absolute",
           height: "100%",
-          width: "1600px",
+          width: "1810px",
           margin: "auto",
           left: 0,
           right: 0,
