@@ -1,112 +1,165 @@
 import React from "react";
 import { AbsoluteFill, useCurrentFrame, useVideoConfig, interpolate, Easing } from "remotion";
-import {
-  GenericCard,
-  GenericCardData,
-} from "../../../../components/cards/GenericCard";
 
-interface HorizontalScrollProps {
-  cardsData?: GenericCardData[];
-  videoTitle?: string;
-}
-
-export const HorizontalScroll: React.FC<HorizontalScrollProps> = ({
-  cardsData = [],
-  videoTitle,
-}) => {
+export const HorizontalScroll: React.FC = () => {
   const frame = useCurrentFrame();
-  const { fps, durationInFrames } = useVideoConfig();
+  const { fps } = useVideoConfig();
 
-  // FIX: "Too Fast"
-  // Instead of a Physics Spring (which finishes in ~1-2 seconds),
-  // We use the ENTIRE duration of the video clip to scroll.
-  // This ensures it moves as slowly as possible while still showing everything.
+  // Dummy data - 20 items for more variety
+  const items = [
+    { id: 1, color: "#FF6B6B", emoji: "🚀" },
+    { id: 2, color: "#4ECDC4", emoji: "⭐" },
+    { id: 3, color: "#45B7D1", emoji: "🎨" },
+    { id: 4, color: "#FFA07A", emoji: "🎯" },
+    { id: 5, color: "#98D8C8", emoji: "💎" },
+    { id: 6, color: "#F7DC6F", emoji: "🔥" },
+    { id: 7, color: "#A29BFE", emoji: "🎪" },
+    { id: 8, color: "#FD79A8", emoji: "🌟" },
+    { id: 9, color: "#FDCB6E", emoji: "⚡" },
+    { id: 10, color: "#6C5CE7", emoji: "🎭" },
+    { id: 11, color: "#FF85A2", emoji: "🎸" },
+    { id: 12, color: "#74B9FF", emoji: "🌈" },
+    { id: 13, color: "#A29BFE", emoji: "🎮" },
+    { id: 14, color: "#FD79A8", emoji: "🏆" },
+    { id: 15, color: "#55EFC4", emoji: "🌺" },
+    { id: 16, color: "#FFEAA7", emoji: "🍕" },
+    { id: 17, color: "#DFE6E9", emoji: "🎲" },
+    { id: 18, color: "#00B894", emoji: "🌍" },
+    { id: 19, color: "#E17055", emoji: "🎈" },
+    { id: 20, color: "#0984E3", emoji: "🎁" },
 
-  // 1. delayed start to let the viewer settle
-  const delay = 15;
-  const activeFrame = Math.max(0, frame - delay);
-  const duration = Math.max(1, durationInFrames - delay - 30); // Buffer at end
+  ];
 
-  // 2. The scroll animation
-  // We want to scroll from 0 to roughly end of content
-  // We estimate width again, or just scroll a significant amount
-  const progress = interpolate(
-    activeFrame,
-    [0, duration],
-    [0, 1],
-    {
-      // "Cinematic" Easing: Starts slow, moves steady, stops slow.
-      easing: Easing.bezier(0.25, 0.1, 0.25, 1.0),
-      extrapolateLeft: "clamp",
-      extrapolateRight: "clamp",
+  // Auto-rotate every 1 second (30 frames at 30fps, or 60 frames at 60fps)
+  const framesPerRotation = fps; // 1 second
+  const currentRotation = Math.floor(frame / framesPerRotation);
+  const activeIndex = currentRotation % items.length;
+
+  // Progress within current rotation for smooth transitions
+  const rotationProgress = (frame % framesPerRotation) / framesPerRotation;
+
+  // Generate 5 visible items (level-2, level-1, level0, level1, level2)
+  const generateVisibleItems = () => {
+    const visibleItems = [];
+
+    for (let i = -2; i <= 2; i++) {
+      let index = activeIndex + i;
+
+      // Handle wrapping
+      if (index < 0) {
+        index = items.length + index;
+      } else if (index >= items.length) {
+        index = index % items.length;
+      }
+
+      visibleItems.push({
+        ...items[index],
+        level: -i, // level-2, level-1, level0, level1, level2
+        originalIndex: index,
+      });
     }
-  );
 
-  // Calculate distance
-  const totalWidthEstimate = 1800 + (cardsData.length * 600);
-  // We scroll until the end, leaving some margin
-  const scrollDistance = totalWidthEstimate - 1200;
+    return visibleItems;
+  };
 
-  const xScroll = progress * -scrollDistance;
+  const visibleItems = generateVisibleItems();
+
+  // Get card style based on level with smooth transitions
+  const getCardStyle = (level: number) => {
+    // Base styles for each level - FULL HEIGHT FOR VIDEO (1080p)
+    const levelStyles = {
+      '-2': { height: 600, width: 440, left: 1300, opacity: 0.6, zIndex: 1 },
+      '-1': { height: 720, width: 520, left: 1000, opacity: 0.8, zIndex: 2 },
+      '0': { height: 800, width: 600, left: 600, opacity: 1, zIndex: 3 },
+      '1': { height: 720, width: 520, left: 253, opacity: 0.8, zIndex: 2 },
+      '2': { height: 600, width: 440, left: -40, opacity: 0.6, zIndex: 1 },
+    };
+
+    const currentStyle = levelStyles[level.toString() as keyof typeof levelStyles];
+
+    if (!currentStyle) return levelStyles['2'];
+
+    // Smooth transition between positions
+    const transitionProgress = interpolate(
+      rotationProgress,
+      [0, 1],
+      [0, 1],
+      {
+        easing: Easing.inOut(Easing.ease),
+        extrapolateLeft: "clamp",
+        extrapolateRight: "clamp",
+      }
+    );
+
+    return {
+      ...currentStyle,
+      transition: transitionProgress,
+    };
+  };
 
   return (
     <AbsoluteFill
       style={{
-        background: "linear-gradient(135deg, #0a4d4e 0%, #1a1a2e 100%)",
-        flexDirection: "row",
-        alignItems: "center",
-        paddingLeft: "100px",
+        background: "linear-gradient(135deg, #89FAD0 0%, #5FD3BC 100%)",
+        overflow: "hidden",
+        fontFamily: "'Lobster', cursive",
       }}
     >
+      {/* Carousel Container */}
       <div
         style={{
+          position: "absolute",
+          height: "100%",
+          width: "1600px",
+          margin: "auto",
+          left: 0,
+          right: 0,
+          top: 0,
+          bottom: 0,
           display: "flex",
-          flexDirection: "row",
           alignItems: "center",
-          // Hardware Accelerated Layer
-          transform: `translateX(${xScroll}px) translateZ(0)`,
-          willChange: "transform",
         }}
       >
-        {/* Title Group - Staggers in slightly differently? No, keep it simple and solid for now. */}
-        <div
-          style={{
-            minWidth: "1720px",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            marginRight: "40px",
-          }}
-        >
-          <h1
-            style={{
-              color: '#ff9000',
-              fontSize: "154px",
-              textAlign: "center",
-              fontFamily: "cursive",
-              fontWeight: "bolder",
-              margin: 0,
-              whiteSpace: "nowrap",
-            }}
-          >
-            {videoTitle}
-          </h1>
-        </div>
+        {/* Render visible cards */}
+        {visibleItems.map((item, idx) => {
+          const style = getCardStyle(item.level);
 
-        {/* Cards */}
-        {cardsData.map((cardData, cardIndex) => (
-          <div
-            key={cardIndex}
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              marginRight: "80px",
-            }}
-          >
-            <GenericCard data={cardData} index={cardIndex} />
-          </div>
-        ))}
+          return (
+            <div
+              key={`${item.originalIndex}-${idx}`}
+              style={{
+                position: "absolute",
+                height: `${style.height}px`,
+                width: `${style.width}px`,
+                left: `${style.left}px`,
+                top: "50%",
+                transform: "translateY(-50%)",
+                background: item.color,
+                borderRadius: "10px",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                alignItems: "center",
+                color: "white",
+                fontSize: "40px",
+                fontWeight: "bold",
+                boxShadow: "0 8px 30px rgba(0,0,0,0.3)",
+                opacity: style.opacity,
+                zIndex: style.zIndex,
+                // Smooth transitions
+                transition: "all 1s cubic-bezier(0.4, 0, 0.2, 1)",
+                willChange: "transform, opacity",
+              }}
+            >
+              <div style={{ fontSize: "200px", marginBottom: "30px" }}>
+                {item.emoji}
+              </div>
+              <div style={{ fontSize: "110px", fontWeight: "bold" }}>
+                {item.id}
+              </div>
+            </div>
+          );
+        })}
       </div>
     </AbsoluteFill>
   );
