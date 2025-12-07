@@ -30,8 +30,8 @@ export const HorizontalScroll: React.FC = () => {
 
   ];
 
-  // Auto-rotate every 1 second (30 frames at 30fps, or 60 frames at 60fps)
-  const framesPerRotation = fps; // 1 second
+  // Auto-rotate every 3 seconds (90 frames at 30fps, or 180 frames at 60fps)
+  const framesPerRotation = fps * 3; // 3 seconds
   const currentRotation = Math.floor(frame / framesPerRotation);
   const activeIndex = currentRotation % items.length;
 
@@ -66,13 +66,13 @@ export const HorizontalScroll: React.FC = () => {
 
   // Get card style based on level with smooth transitions
   const getCardStyle = (level: number) => {
-    // Base styles for each level - FULL HEIGHT FOR VIDEO (1080p)
+    // Base styles for each level - OPTIMIZED FOR VIDEO (fits in frame)
     const levelStyles = {
-      '-2': { height: 600, width: 440, left: 1300, opacity: 0.6, zIndex: 1 },
-      '-1': { height: 720, width: 520, left: 1000, opacity: 0.8, zIndex: 2 },
-      '0': { height: 800, width: 600, left: 600, opacity: 1, zIndex: 3 },
-      '1': { height: 720, width: 520, left: 253, opacity: 0.8, zIndex: 2 },
-      '2': { height: 600, width: 440, left: -40, opacity: 0.6, zIndex: 1 },
+      '-2': { height: 500, width: 367, left: 1300, opacity: 0.6, zIndex: 1 },
+      '-1': { height: 600, width: 433, left: 1000, opacity: 0.8, zIndex: 2 },
+      '0': { height: 650, width: 500, left: 600, opacity: 1, zIndex: 3 },
+      '1': { height: 600, width: 433, left: 253, opacity: 0.8, zIndex: 2 },
+      '2': { height: 500, width: 367, left: -40, opacity: 0.6, zIndex: 1 },
     };
 
     const currentStyle = levelStyles[level.toString() as keyof typeof levelStyles];
