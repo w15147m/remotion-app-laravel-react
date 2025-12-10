@@ -14,6 +14,7 @@ export interface GenericCardData {
   rankNumber?: number | null;
   rankLabel?: string | null;
   mediaUrl?: string | null;
+  extraInfo?: string | null;
 }
 
 interface GenericCardProps {
@@ -221,6 +222,23 @@ export const GenericCard: React.FC<GenericCardProps> = ({ data, index }) => {
             }}
           >
             {data.rankNumber} {data.rankLabel}
+          </div>
+        )}
+
+        {/* Extra Info */}
+        {data.extraInfo && data.extraInfo !== null && (
+          <div
+            style={{
+              backgroundColor: "#4a4a4a",
+              color: "white",
+              padding: "15px",
+              textAlign: "center",
+              fontFamily,
+              fontSize: "22px",
+              fontWeight: "500",
+            }}
+          >
+            {data.extraInfo}
           </div>
         )}
       </div>

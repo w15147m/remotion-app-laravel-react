@@ -25,6 +25,7 @@ const AUDIO_OPTIONS = [
 const ANIMATION_OPTIONS = [
   { label: "3D Depth Carousel", value: "carousel" },
   { label: "5-Position Circular", value: "circular" },
+  { label: "Linear Scroll", value: "linear" },
 ];
 
 export const RenderControls: React.FC<{

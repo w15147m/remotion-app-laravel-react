@@ -10,6 +10,7 @@ export const GenericCardData = z.object({
   rankNumber: z.number().nullish(),
   rankLabel: z.string().nullish(),
   mediaUrl: z.string().nullish(),
+  extraInfo: z.string().nullish(),
 });
 
 export const CompositionProps = z.object({
@@ -18,7 +19,7 @@ export const CompositionProps = z.object({
   audioFileName: z.string().optional(),
   cardsData: z.array(GenericCardData).optional(),
   videoTitle: z.string().optional(),
-  animationType: z.enum(["carousel", "circular"]).optional(),
+  animationType: z.enum(["carousel", "circular", "linear"]).optional(),
 });
 
 export const defaultMyCompProps: z.infer<typeof CompositionProps> = {
