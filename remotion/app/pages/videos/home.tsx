@@ -45,6 +45,14 @@ export default function Index() {
     return "";
   });
 
+  // Load animation type from sessionStorage
+  const [animationType, setAnimationType] = useState<string>(() => {
+    if (typeof window !== "undefined") {
+      return sessionStorage.getItem("animationType") || "carousel";
+    }
+    return "carousel";
+  });
+
   // On mount, load data from data.js and save to sessionStorage
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -65,6 +73,14 @@ export default function Index() {
     }
   };
 
+  const handleAnimationTypeChange = (value: string) => {
+    setAnimationType(value);
+    if (typeof window !== "undefined") {
+      sessionStorage.setItem("animationType", value);
+      window.location.reload();
+    }
+  };
+
   const inputProps: z.infer<typeof CompositionProps> = useMemo(() => {
     return {
       title: text,
@@ -72,8 +88,9 @@ export default function Index() {
       audioFileName: audioFileName || undefined,
       cardsData: cardsData,
       videoTitle: videoTitle,
+      animationType: animationType as "carousel" | "circular",
     };
-  }, [text, durationInSeconds, audioFileName, cardsData, videoTitle]);
+  }, [text, durationInSeconds, audioFileName, cardsData, videoTitle, animationType]);
 
   const durationInFrames = useMemo(() => {
     return Math.round(durationInSeconds * COMPOSITION_FPS);
@@ -104,6 +121,8 @@ export default function Index() {
         setDurationInSeconds={setDurationInSeconds}
         audioFileName={audioFileName}
         setAudioFileName={handleAudioChange}
+        animationType={animationType}
+        setAnimationType={handleAnimationTypeChange}
         inputProps={inputProps}
       ></RenderControls>
 

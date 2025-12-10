@@ -18,6 +18,7 @@ export const CompositionProps = z.object({
   audioFileName: z.string().optional(),
   cardsData: z.array(GenericCardData).optional(),
   videoTitle: z.string().optional(),
+  animationType: z.enum(["carousel", "circular"]).optional(),
 });
 
 export const defaultMyCompProps: z.infer<typeof CompositionProps> = {
@@ -26,6 +27,7 @@ export const defaultMyCompProps: z.infer<typeof CompositionProps> = {
   audioFileName: "deep.mp3",
   cardsData: [],
   videoTitle: "",
+  animationType: "carousel",
 };
 
 

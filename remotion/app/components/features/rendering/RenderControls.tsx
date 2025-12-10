@@ -22,6 +22,11 @@ const AUDIO_OPTIONS = [
   { label: "Relaxing", value: "relaxing.mp3" },
 ];
 
+const ANIMATION_OPTIONS = [
+  { label: "3D Depth Carousel", value: "carousel" },
+  { label: "5-Position Circular", value: "circular" },
+];
+
 export const RenderControls: React.FC<{
   text: string;
   setText: React.Dispatch<React.SetStateAction<string>>;
@@ -29,9 +34,11 @@ export const RenderControls: React.FC<{
   setDurationInSeconds: React.Dispatch<React.SetStateAction<number>>;
   audioFileName: string;
   setAudioFileName: ((value: string) => void) | React.Dispatch<React.SetStateAction<string>>;
+  animationType: string;
+  setAnimationType: ((value: string) => void) | React.Dispatch<React.SetStateAction<string>>;
   inputProps: z.infer<typeof CompositionProps>;
   compositionId?: string;
-}> = ({ text, setText, durationInSeconds, setDurationInSeconds, audioFileName, setAudioFileName, inputProps, compositionId = COMPOSITION_ID }) => {
+}> = ({ text, setText, durationInSeconds, setDurationInSeconds, audioFileName, setAudioFileName, animationType, setAnimationType, inputProps, compositionId = COMPOSITION_ID }) => {
   const { renderMedia, state, undo } = useRendering(compositionId, inputProps);
   const [durationText, setDurationText] = React.useState(durationInSeconds.toString());
 
@@ -81,6 +88,17 @@ export const RenderControls: React.FC<{
                 options={AUDIO_OPTIONS}
               ></Select>
             </div>
+          </div>
+          <div className="mb-2">
+            <label className="block text-sm font-medium text-foreground opacity-80 mb-1">
+              Animation Type
+            </label>
+            <Select
+              disabled={state.status === "invoking"}
+              onChange={setAnimationType}
+              value={animationType}
+              options={ANIMATION_OPTIONS}
+            ></Select>
           </div>
           <Spacing></Spacing>
           <AlignEnd>
