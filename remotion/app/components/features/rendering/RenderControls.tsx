@@ -53,55 +53,55 @@ export const RenderControls: React.FC<{
 
   return (
     <InputContainer>
-      {state.status === "init" ||
-        state.status === "invoking" ||
-        state.status === "error" ? (
+      <div className="flex flex-row gap-4">
+        <div className="mb-2 flex-1">
+          <label className="block text-sm font-medium text-foreground opacity-80 mb-1">
+            Video Title
+          </label>
+          <Input
+            disabled={state.status === "invoking" || state.status === "rendering" || state.status === "done"}
+            setText={setText}
+            text={text}
+          ></Input>
+        </div>
+        <div className="mb-2 flex-1">
+          <label className="block text-sm font-medium text-foreground opacity-80 mb-1">
+            Duration (seconds)
+          </label>
+          <Input
+            disabled={state.status === "invoking" || state.status === "rendering" || state.status === "done"}
+            setText={handleDurationChange}
+            text={durationText}
+          ></Input>
+        </div>
+        <div className="mb-2 flex-1">
+          <label className="block text-sm font-medium text-foreground opacity-80 mb-1">
+            Background Audio
+          </label>
+          <Select
+            disabled={state.status === "invoking" || state.status === "rendering" || state.status === "done"}
+            onChange={setAudioFileName}
+            value={audioFileName}
+            options={AUDIO_OPTIONS}
+          ></Select>
+        </div>
+      </div>
+      <div className="mb-2">
+        <label className="block text-sm font-medium text-foreground opacity-80 mb-1">
+          Animation Type
+        </label>
+        <Select
+          disabled={state.status === "invoking" || state.status === "rendering" || state.status === "done"}
+          onChange={setAnimationType}
+          value={animationType}
+          options={ANIMATION_OPTIONS}
+        ></Select>
+      </div>
+
+      <Spacing></Spacing>
+
+      {state.status === "init" || state.status === "invoking" || state.status === "error" ? (
         <>
-          <div className="flex flex-row gap-4">
-            <div className="mb-2 flex-1">
-              <label className="block text-sm font-medium text-foreground opacity-80 mb-1">
-                Video Title
-              </label>
-              <Input
-                disabled={state.status === "invoking"}
-                setText={setText}
-                text={text}
-              ></Input>
-            </div>
-            <div className="mb-2 flex-1">
-              <label className="block text-sm font-medium text-foreground opacity-80 mb-1">
-                Duration (seconds)
-              </label>
-              <Input
-                disabled={state.status === "invoking"}
-                setText={handleDurationChange}
-                text={durationText}
-              ></Input>
-            </div>
-            <div className="mb-2 flex-1">
-              <label className="block text-sm font-medium text-foreground opacity-80 mb-1">
-                Background Audio
-              </label>
-              <Select
-                disabled={state.status === "invoking"}
-                onChange={setAudioFileName}
-                value={audioFileName}
-                options={AUDIO_OPTIONS}
-              ></Select>
-            </div>
-          </div>
-          <div className="mb-2">
-            <label className="block text-sm font-medium text-foreground opacity-80 mb-1">
-              Animation Type
-            </label>
-            <Select
-              disabled={state.status === "invoking"}
-              onChange={setAnimationType}
-              value={animationType}
-              options={ANIMATION_OPTIONS}
-            ></Select>
-          </div>
-          <Spacing></Spacing>
           <AlignEnd>
             <Button
               disabled={state.status === "invoking"}
@@ -116,6 +116,7 @@ export const RenderControls: React.FC<{
           ) : null}
         </>
       ) : null}
+
       {state.status === "rendering" ? (
         <>
           <ProgressBar progress={0.5} />
@@ -125,6 +126,7 @@ export const RenderControls: React.FC<{
           </div>
         </>
       ) : null}
+
       {state.status === "done" ? (
         <>
           <ProgressBar progress={1} />
