@@ -1,5 +1,5 @@
 import React from "react";
-import { AbsoluteFill, useCurrentFrame, useVideoConfig } from "remotion";
+import { AbsoluteFill, useCurrentFrame, useVideoConfig, interpolate } from "remotion";
 
 interface CircularCarouselItem {
   id: number;
@@ -8,7 +8,7 @@ interface CircularCarouselItem {
 
 interface CircularCarouselAnimationProps {
   items: CircularCarouselItem[];
-  rotationDuration?: number;
+  rotationDuration?: number; // Seconds per item
   videoTitle?: string;
 }
 
@@ -21,94 +21,11 @@ export const CircularCarouselAnimation: React.FC<CircularCarouselAnimationProps>
   const { fps } = useVideoConfig();
 
   const itemCount = items.length;
-
-  // Auto-rotate
-  const framesPerRotation = fps * rotationDuration;
-  const currentRotation = Math.floor(frame / framesPerRotation);
-  const selectedIndex = currentRotation % itemCount;
-
-  // Get position class for each item
-  const getPositionClass = (index: number) => {
-    const relativeIndex = (index - selectedIndex + itemCount) % itemCount;
-    if (relativeIndex === 0) return "selected";
-    if (relativeIndex === 1) return "next";
-    if (relativeIndex === 2) return "nextRightSecond";
-    if (relativeIndex === itemCount - 1) return "prev";
-    if (relativeIndex === itemCount - 2) return "prevLeftSecond";
-    return relativeIndex > 2 ? "hideRight" : "hideLeft";
-  };
-
-  // Get styles for each position
-  const getPositionStyle = (positionClass: string) => {
-    const baseStyle = {
-      position: "absolute" as const,
-      transition: "all 1s ease-out",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-    };
-
-    switch (positionClass) {
-      case "selected":
-        return {
-          ...baseStyle,
-          left: "50%",
-          transform: "translateY(0%) translateX(-50%)",
-          width: "500px",
-          height: "700px",
-          zIndex: 10,
-          opacity: 1,
-        };
-      case "next":
-        return {
-          ...baseStyle,
-          left: "72%",
-          transform: "translateY(0%) translateX(-50%)",
-          width: "420px",
-          height: "600px",
-          zIndex: 5,
-          opacity: 1,
-        };
-      case "prev":
-        return {
-          ...baseStyle,
-          left: "28%",
-          transform: "translateY(0%) translateX(-50%)",
-          width: "420px",
-          height: "600px",
-          zIndex: 5,
-          opacity: 1,
-        };
-      case "nextRightSecond":
-        return {
-          ...baseStyle,
-          left: "60%",
-          transform: "translateY(5%) translateX(-35%)",
-          width: "350px",
-          height: "500px",
-          zIndex: 2,
-          opacity: 0.7,
-        };
-      case "prevLeftSecond":
-        return {
-          ...baseStyle,
-          left: "40%",
-          transform: "translateY(5%) translateX(-65%)",
-          width: "350px",
-          height: "500px",
-          zIndex: 2,
-          opacity: 0.7,
-        };
-      default:
-        return {
-          ...baseStyle,
-          opacity: 0,
-          zIndex: 0,
-          width: "300px",
-          height: "400px",
-        };
-    }
-  };
+  // Calculate continuous progress
+  // frame 0 -> 0
+  // frame = rotationDuration * fps -> 1
+  const framesPerItem = fps * rotationDuration;
+  const progress = frame / framesPerItem;
 
   return (
     <AbsoluteFill
@@ -129,8 +46,85 @@ export const CircularCarouselAnimation: React.FC<CircularCarouselAnimationProps>
         }}
       >
         {items.map((item, index) => {
-          const positionClass = getPositionClass(index);
-          const style = getPositionStyle(positionClass);
+          let dist = (index - progress) % itemCount;
+          if (dist > itemCount / 2) dist -= itemCount;
+          if (dist < -itemCount / 2) dist += itemCount;
+
+          const range = [-3, -2, -1, 0, 1, 2, 3];
+
+          const opacity = interpolate(
+            dist,
+            range,
+            [0, 0.7, 1, 1, 1, 0.7, 0],
+            { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
+          );
+
+          const left = interpolate(
+            dist,
+            range,
+            [50, 40, 28, 50, 72, 60, 50], // Map to percentage strings later
+            { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
+          );
+
+          // Width in px
+          const width = interpolate(
+            dist,
+            range,
+            [300, 350, 420, 500, 420, 350, 300],
+            { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
+          );
+
+          // Height in px
+          const height = interpolate(
+            dist,
+            range,
+            [400, 500, 600, 700, 600, 500, 400],
+            { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
+          );
+
+          // Z-index
+          const zIndex = Math.round(interpolate(
+            dist,
+            range,
+            [0, 2, 5, 10, 5, 2, 0],
+            { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
+          ));
+
+          // Translate X % (relative to element self width)
+          // Selected: -50%
+          // Next/Prev: -50%
+          // NextRightSecond: -35% 
+          // PrevLeftSecond: -65%
+          // Hidden: -50%
+          const translateX = interpolate(
+            dist,
+            range,
+            [-50, -65, -50, -50, -50, -35, -50],
+            { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
+          );
+
+          // Translate Y % 
+          // Second items moved down by 5%
+          const translateY = interpolate(
+            dist,
+            range,
+            [0, 5, 0, 0, 0, 5, 0],
+            { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
+          );
+
+          const style: React.CSSProperties = {
+            position: "absolute",
+            // No CSS transition!
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            left: `${left}%`,
+            width: `${width}px`,
+            height: `${height}px`,
+            opacity,
+            zIndex,
+            transform: `translate(${translateX}%, ${translateY}%)`,
+          };
 
           return (
             <div key={item.id} style={style}>
