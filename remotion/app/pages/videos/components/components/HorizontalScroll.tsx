@@ -8,12 +8,14 @@ interface HorizontalScrollProps {
   cardsData?: GenericCardData[];
   videoTitle?: string;
   animationType?: "carousel" | "circular" | "linear";
+  animationSpeed?: number;
 }
 
 export const HorizontalScroll: React.FC<HorizontalScrollProps> = ({
   cardsData = [],
   videoTitle,
   animationType = "carousel",
+  animationSpeed = 3,
 }) => {
   // Transform data into carousel items with GenericCard components
   const carouselItems = cardsData.map((cardData, index) => ({
@@ -35,12 +37,12 @@ export const HorizontalScroll: React.FC<HorizontalScrollProps> = ({
 
   // Switch between animation types
   if (animationType === "circular") {
-    return <CircularCarouselAnimation items={carouselItems} rotationDuration={2} videoTitle={videoTitle} />;
+    return <CircularCarouselAnimation items={carouselItems} rotationDuration={animationSpeed} videoTitle={videoTitle} />;
   }
 
   if (animationType === "linear") {
-    return <LinearScrollAnimation items={carouselItems} rotationDuration={3} videoTitle={videoTitle} />;
+    return <LinearScrollAnimation items={carouselItems} rotationDuration={animationSpeed} videoTitle={videoTitle} />;
   }
 
-  return <CarouselAnimation items={carouselItems} rotationDuration={3} videoTitle={videoTitle} />;
+  return <CarouselAnimation items={carouselItems} rotationDuration={animationSpeed} videoTitle={videoTitle} />;
 };

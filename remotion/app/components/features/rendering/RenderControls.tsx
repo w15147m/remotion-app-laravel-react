@@ -37,17 +37,28 @@ export const RenderControls: React.FC<{
   setAudioFileName: ((value: string) => void) | React.Dispatch<React.SetStateAction<string>>;
   animationType: string;
   setAnimationType: ((value: string) => void) | React.Dispatch<React.SetStateAction<string>>;
+  animationSpeed: number;
+  setAnimationSpeed: (value: number) => void;
   inputProps: z.infer<typeof CompositionProps>;
   compositionId?: string;
-}> = ({ text, setText, durationInSeconds, setDurationInSeconds, audioFileName, setAudioFileName, animationType, setAnimationType, inputProps, compositionId = COMPOSITION_ID }) => {
+}> = ({ text, setText, durationInSeconds, setDurationInSeconds, audioFileName, setAudioFileName, animationType, setAnimationType, animationSpeed, setAnimationSpeed, inputProps, compositionId = COMPOSITION_ID }) => {
   const { renderMedia, state, undo } = useRendering(compositionId, inputProps);
   const [durationText, setDurationText] = React.useState(durationInSeconds.toString());
+  const [animationSpeedText, setAnimationSpeedText] = React.useState(animationSpeed.toString());
 
   const handleDurationChange = (value: string) => {
     setDurationText(value);
     const num = parseFloat(value);
     if (!isNaN(num) && num > 0) {
       setDurationInSeconds(num);
+    }
+  };
+
+  const handleAnimationSpeedChange = (value: string) => {
+    setAnimationSpeedText(value);
+    const num = parseFloat(value);
+    if (!isNaN(num) && num > 0) {
+      setAnimationSpeed(num);
     }
   };
 
@@ -86,16 +97,28 @@ export const RenderControls: React.FC<{
           ></Select>
         </div>
       </div>
-      <div className="mb-2">
-        <label className="block text-sm font-medium text-foreground opacity-80 mb-1">
-          Animation Type
-        </label>
-        <Select
-          disabled={state.status === "invoking" || state.status === "rendering" || state.status === "done"}
-          onChange={setAnimationType}
-          value={animationType}
-          options={ANIMATION_OPTIONS}
-        ></Select>
+      <div className="flex flex-row gap-4">
+        <div className="mb-2 flex-1">
+          <label className="block text-sm font-medium text-foreground opacity-80 mb-1">
+            Animation Type
+          </label>
+          <Select
+            disabled={state.status === "invoking" || state.status === "rendering" || state.status === "done"}
+            onChange={setAnimationType}
+            value={animationType}
+            options={ANIMATION_OPTIONS}
+          ></Select>
+        </div>
+        <div className="mb-2 flex-1">
+          <label className="block text-sm font-medium text-foreground opacity-80 mb-1">
+            Animation Speed (s/item)
+          </label>
+          <Input
+            disabled={state.status === "invoking" || state.status === "rendering" || state.status === "done"}
+            setText={handleAnimationSpeedChange}
+            text={animationSpeedText}
+          ></Input>
+        </div>
       </div>
 
       <Spacing></Spacing>

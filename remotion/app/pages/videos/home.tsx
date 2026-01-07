@@ -53,6 +53,15 @@ export default function Index() {
     return "carousel";
   });
 
+  // Load animation speed from sessionStorage
+  const [animationSpeed, setAnimationSpeed] = useState<number>(() => {
+    if (typeof window !== "undefined") {
+      const stored = sessionStorage.getItem("animationSpeed");
+      return stored ? parseFloat(stored) : 3;
+    }
+    return 3;
+  });
+
   // On mount, load data from data.js and save to sessionStorage
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -81,6 +90,17 @@ export default function Index() {
     }
   };
 
+  const handleAnimationSpeedChange = (value: number) => {
+    setAnimationSpeed(value);
+    if (typeof window !== "undefined") {
+      sessionStorage.setItem("animationSpeed", value.toString());
+      // No reload needed for speed if we want it to be responsive, 
+      // but other changes reload, so let's be consistent if needed.
+      // Actually, speed change shouldn't require a full reload if the Player handles inputProps change.
+      // But the other handlers reload because of audio and type.
+    }
+  };
+
   const inputProps: z.infer<typeof CompositionProps> = useMemo(() => {
     return {
       title: text,
@@ -88,9 +108,10 @@ export default function Index() {
       audioFileName: audioFileName || undefined,
       cardsData: cardsData,
       videoTitle: videoTitle,
-      animationType: animationType as "carousel" | "circular",
+      animationType: animationType as "carousel" | "circular" | "linear", // fixed casting to include 'linear'
+      animationSpeed: animationSpeed,
     };
-  }, [text, durationInSeconds, audioFileName, cardsData, videoTitle, animationType]);
+  }, [text, durationInSeconds, audioFileName, cardsData, videoTitle, animationType, animationSpeed]);
 
   const durationInFrames = useMemo(() => {
     return Math.round(durationInSeconds * COMPOSITION_FPS);
@@ -123,6 +144,8 @@ export default function Index() {
         setAudioFileName={handleAudioChange}
         animationType={animationType}
         setAnimationType={handleAnimationTypeChange}
+        animationSpeed={animationSpeed}
+        setAnimationSpeed={handleAnimationSpeedChange}
         inputProps={inputProps}
       ></RenderControls>
 

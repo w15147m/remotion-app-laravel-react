@@ -21,7 +21,7 @@ export const LinearScrollAnimation: React.FC<LinearScrollAnimationProps> = ({
   const { fps } = useVideoConfig();
 
   const cardWidth = 625;
-  const gap = 100;
+  const gap = 20;
   const itemSpacing = cardWidth + gap;
   const framesPerItem = fps * rotationDuration;
   const progress = frame / framesPerItem;
@@ -78,7 +78,7 @@ export const LinearScrollAnimation: React.FC<LinearScrollAnimationProps> = ({
                 left: "50%", // Start at center
                 top: "50%",
                 width: `${cardWidth}px`,
-                height: "80%", // Allow space for title
+                height: "90%", // Allow space for title
                 transform: `translateX(calc(-50% + ${xOffset}px)) translateY(-50%) scale(${scale})`,
                 opacity,
                 zIndex,
