@@ -9,6 +9,8 @@ interface HorizontalScrollProps {
   videoTitle?: string;
   animationType?: "carousel" | "circular" | "linear";
   animationSpeed?: number;
+  cardHeight?: number | string;
+  cardWidth?: number | string;
 }
 
 export const HorizontalScroll: React.FC<HorizontalScrollProps> = ({
@@ -16,6 +18,8 @@ export const HorizontalScroll: React.FC<HorizontalScrollProps> = ({
   videoTitle,
   animationType = "carousel",
   animationSpeed = 3,
+  cardHeight,
+  cardWidth,
 }) => {
   // Transform data into carousel items with GenericCard components
   const carouselItems = cardsData.map((cardData, index) => ({
@@ -30,7 +34,7 @@ export const HorizontalScroll: React.FC<HorizontalScrollProps> = ({
           justifyContent: "center",
         }}
       >
-        <GenericCard data={cardData} index={index} />
+        <GenericCard data={cardData} index={index} width={cardWidth} height={cardHeight} />
       </div>
     ),
   }));

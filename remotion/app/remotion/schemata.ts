@@ -21,6 +21,10 @@ export const CompositionProps = z.object({
   videoTitle: z.string().optional(),
   animationType: z.enum(["carousel", "circular", "linear"]).optional(),
   animationSpeed: z.number().positive().optional(),
+  fps: z.number().positive().optional(),
+  backgroundColor: z.string().optional(),
+  cardHeight: z.union([z.number(), z.string()]).optional(),
+  cardWidth: z.union([z.number(), z.string()]).optional(),
 });
 
 export const defaultMyCompProps: z.infer<typeof CompositionProps> = {
@@ -31,6 +35,10 @@ export const defaultMyCompProps: z.infer<typeof CompositionProps> = {
   videoTitle: "",
   animationType: "carousel",
   animationSpeed: 3,
+  fps: 30,
+  backgroundColor: "#ffffff",
+  cardHeight: 600,
+  cardWidth: 400,
 };
 
 

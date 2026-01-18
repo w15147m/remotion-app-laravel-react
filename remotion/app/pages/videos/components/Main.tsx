@@ -15,17 +15,30 @@ const container: React.CSSProperties = {
   backgroundColor: "white",
 };
 
-export const Main = ({ title, audioFileName, cardsData, videoTitle, animationType, animationSpeed }: z.infer<typeof CompositionProps>) => {
+
+export const Main = ({ title, audioFileName, cardsData, videoTitle, animationType, animationSpeed, backgroundColor, cardHeight, cardWidth }: z.infer<typeof CompositionProps>) => {
   const { fps } = useVideoConfig();
 
+  const dynamicContainer: React.CSSProperties = {
+    ...container,
+    backgroundColor: backgroundColor || "white",
+  };
+
   return (
-    <AbsoluteFill style={container}>
+    <AbsoluteFill style={dynamicContainer}>
       {audioFileName && (
         <Loop durationInFrames={Math.ceil((audioDurations[audioFileName] || 10) * fps)}>
           <Audio src={staticFile(`audio/${audioFileName}`)} volume={1} />
         </Loop>
       )}
-      <HorizontalScroll cardsData={cardsData} videoTitle={videoTitle} animationType={animationType} animationSpeed={animationSpeed} />
+      <HorizontalScroll
+        cardsData={cardsData}
+        videoTitle={videoTitle}
+        animationType={animationType}
+        animationSpeed={animationSpeed}
+        cardHeight={cardHeight}
+        cardWidth={cardWidth}
+      />
     </AbsoluteFill>
   );
 };

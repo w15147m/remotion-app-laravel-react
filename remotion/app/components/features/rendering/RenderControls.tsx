@@ -39,12 +39,23 @@ export const RenderControls: React.FC<{
   setAnimationType: ((value: string) => void) | React.Dispatch<React.SetStateAction<string>>;
   animationSpeed: number;
   setAnimationSpeed: (value: number) => void;
+  fps: number;
+  setFps: (value: number) => void;
+  backgroundColor: string;
+  setBackgroundColor: (value: string) => void;
+  cardHeight: number | string;
+  setCardHeight: (value: number | string) => void;
+  cardWidth: number | string;
+  setCardWidth: (value: number | string) => void;
   inputProps: z.infer<typeof CompositionProps>;
   compositionId?: string;
-}> = ({ text, setText, durationInSeconds, setDurationInSeconds, audioFileName, setAudioFileName, animationType, setAnimationType, animationSpeed, setAnimationSpeed, inputProps, compositionId = COMPOSITION_ID }) => {
+}> = ({ text, setText, durationInSeconds, setDurationInSeconds, audioFileName, setAudioFileName, animationType, setAnimationType, animationSpeed, setAnimationSpeed, fps, setFps, backgroundColor, setBackgroundColor, cardHeight, setCardHeight, cardWidth, setCardWidth, inputProps, compositionId = COMPOSITION_ID }) => {
   const { renderMedia, state, undo } = useRendering(compositionId, inputProps);
   const [durationText, setDurationText] = React.useState(durationInSeconds.toString());
   const [animationSpeedText, setAnimationSpeedText] = React.useState(animationSpeed.toString());
+  const [fpsText, setFpsText] = React.useState(fps.toString());
+  const [cardHeightText, setCardHeightText] = React.useState(cardHeight.toString());
+  const [cardWidthText, setCardWidthText] = React.useState(cardWidth.toString());
 
   const handleDurationChange = (value: string) => {
     setDurationText(value);
@@ -59,6 +70,34 @@ export const RenderControls: React.FC<{
     const num = parseFloat(value);
     if (!isNaN(num) && num > 0) {
       setAnimationSpeed(num);
+    }
+  };
+
+  const handleFpsChange = (value: string) => {
+    setFpsText(value);
+    const num = parseFloat(value);
+    if (!isNaN(num) && num > 0) {
+      setFps(num);
+    }
+  };
+
+  const handleCardHeightChange = (value: string) => {
+    setCardHeightText(value);
+    const num = parseFloat(value);
+    if (!isNaN(num) && num > 0) {
+      setCardHeight(num);
+    } else {
+      setCardHeight(value);
+    }
+  };
+
+  const handleCardWidthChange = (value: string) => {
+    setCardWidthText(value);
+    const num = parseFloat(value);
+    if (!isNaN(num) && num > 0) {
+      setCardWidth(num);
+    } else {
+      setCardWidth(value);
     }
   };
 
@@ -117,6 +156,50 @@ export const RenderControls: React.FC<{
             disabled={state.status === "invoking" || state.status === "rendering" || state.status === "done"}
             setText={handleAnimationSpeedChange}
             text={animationSpeedText}
+          ></Input>
+        </div>
+      </div>
+      <div className="flex flex-row gap-4">
+        <div className="mb-2 flex-1">
+          <label className="block text-sm font-medium text-foreground opacity-80 mb-1">
+            FPS
+          </label>
+          <Input
+            disabled={state.status === "invoking" || state.status === "rendering" || state.status === "done"}
+            setText={handleFpsChange}
+            text={fpsText}
+          ></Input>
+        </div>
+        <div className="mb-2 flex-1">
+          <label className="block text-sm font-medium text-foreground opacity-80 mb-1">
+            Background Color
+          </label>
+          <Input
+            disabled={state.status === "invoking" || state.status === "rendering" || state.status === "done"}
+            setText={setBackgroundColor}
+            text={backgroundColor}
+          ></Input>
+        </div>
+      </div>
+      <div className="flex flex-row gap-4">
+        <div className="mb-2 flex-1">
+          <label className="block text-sm font-medium text-foreground opacity-80 mb-1">
+            Card Height
+          </label>
+          <Input
+            disabled={state.status === "invoking" || state.status === "rendering" || state.status === "done"}
+            setText={handleCardHeightChange}
+            text={cardHeightText}
+          ></Input>
+        </div>
+        <div className="mb-2 flex-1">
+          <label className="block text-sm font-medium text-foreground opacity-80 mb-1">
+            Card Width
+          </label>
+          <Input
+            disabled={state.status === "invoking" || state.status === "rendering" || state.status === "done"}
+            setText={handleCardWidthChange}
+            text={cardWidthText}
           ></Input>
         </div>
       </div>

@@ -20,9 +20,11 @@ export interface GenericCardData {
 interface GenericCardProps {
   data: GenericCardData;
   index: number;
+  width?: number | string;
+  height?: number | string;
 }
 
-export const GenericCard: React.FC<GenericCardProps> = ({ data, index }) => {
+export const GenericCard: React.FC<GenericCardProps> = ({ data, index, width = "625px", height = "100%" }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
@@ -49,8 +51,8 @@ export const GenericCard: React.FC<GenericCardProps> = ({ data, index }) => {
   return (
     <div
       style={{
-        width: "625px",
-        height: "100%",
+        width: typeof width === 'number' ? `${width}px` : width,
+        height: typeof height === 'number' ? `${height}px` : height,
         backgroundColor: "#1a1a1a",
         borderRadius: "20px",
         overflow: "hidden",
