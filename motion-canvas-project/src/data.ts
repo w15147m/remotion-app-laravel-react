@@ -9,7 +9,6 @@ export const videoItems = [
     label: "Goals",
     rankNumber: 1,
     rankLabel: "Goals",
-    mediaUrl: "https://i.pravatar.cc/300?img=1",
     color: "#FF6B6B"
   },
   {
@@ -22,7 +21,6 @@ export const videoItems = [
     label: "Goals",
     rankNumber: 2,
     rankLabel: "Goals",
-    mediaUrl: "https://i.pravatar.cc/300?img=2",
     color: "#4ECDC4"
   },
   {
@@ -35,7 +33,6 @@ export const videoItems = [
     label: "Goals",
     rankNumber: 3,
     rankLabel: "Goals",
-    mediaUrl: "https://i.pravatar.cc/300?img=3",
     color: "#FFE66D"
   },
   {
@@ -48,7 +45,6 @@ export const videoItems = [
     label: "Goals",
     rankNumber: 4,
     rankLabel: "Goals",
-    mediaUrl: "https://i.pravatar.cc/300?img=4",
     color: "#1A535C"
   },
   {
@@ -61,7 +57,6 @@ export const videoItems = [
     label: "Goals",
     rankNumber: 5,
     rankLabel: "Goals",
-    mediaUrl: "https://i.pravatar.cc/300?img=5",
     color: "#F7FFF7"
   },
 ];

@@ -14,7 +14,7 @@ export default makeScene2D('linear-animation', function* (view) {
   view.add(
     <Rect
       size={['100%', '100%']}
-      fill={'linear-gradient(135deg, #FF9A9E 0%, #FECFEF 100%)'}
+      fill={'#FF9A9E'}
     />,
   );
 
@@ -23,22 +23,20 @@ export default makeScene2D('linear-animation', function* (view) {
     <Layout ref={scrollContainer} x={0} y={0}>
       {videoItems.map((item, index) => (
         <Rect
-          key={item.id}
+          key={item.id.toString()}
           x={index * itemSpacing}
           width={cardWidth}
           height={cardHeight}
           fill={'white'}
           radius={20}
-          shadowBlur={40}
-          shadowColor={'rgba(0,0,0,0.1)'}
-          clip
         >
           <Layout direction={'column'} alignItems={'center'} layout padding={40}>
-            <Img
-              src={item.mediaUrl}
+            {/* Placeholder for Image to avoid CORS issues */}
+            <Rect
               width={300}
               height={300}
               radius={150}
+              fill={(item as any).color || '#ccc'}
               marginBottom={40}
             />
             <Txt
