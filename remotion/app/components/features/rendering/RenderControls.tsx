@@ -12,6 +12,7 @@ import { Spacing } from "../../layout/Spacing";
 import { useRendering } from "../../../lib/use-rendering";
 import { COMPOSITION_ID } from "~/remotion/constants.mjs";
 import { CompositionProps } from "~/remotion/schemata";
+import { calculateOptimalSpeed, DEFAULT_FPS } from "../../../lib/motion-utils";
 
 
 const AUDIO_OPTIONS = [
@@ -26,6 +27,7 @@ const ANIMATION_OPTIONS = [
   { label: "3D Depth Carousel", value: "carousel" },
   { label: "5-Position Circular", value: "circular" },
   { label: "Linear Scroll", value: "linear" },
+  { label: "Smooth Easing Scroll", value: "easing" },
 ];
 
 export const RenderControls: React.FC<{
@@ -52,8 +54,6 @@ export const RenderControls: React.FC<{
 }> = ({ text, setText, durationInSeconds, setDurationInSeconds, audioFileName, setAudioFileName, animationType, setAnimationType, animationSpeed, setAnimationSpeed, fps, setFps, backgroundColor, setBackgroundColor, cardHeight, setCardHeight, cardWidth, setCardWidth, inputProps, compositionId = COMPOSITION_ID }) => {
   const { renderMedia, state, undo } = useRendering(compositionId, inputProps);
   const [durationText, setDurationText] = React.useState(durationInSeconds.toString());
-  const [animationSpeedText, setAnimationSpeedText] = React.useState(animationSpeed.toString());
-  const [fpsText, setFpsText] = React.useState(fps.toString());
   const [cardHeightText, setCardHeightText] = React.useState(cardHeight.toString());
   const [cardWidthText, setCardWidthText] = React.useState(cardWidth.toString());
 
@@ -62,22 +62,6 @@ export const RenderControls: React.FC<{
     const num = parseFloat(value);
     if (!isNaN(num) && num > 0) {
       setDurationInSeconds(num);
-    }
-  };
-
-  const handleAnimationSpeedChange = (value: string) => {
-    setAnimationSpeedText(value);
-    const num = parseFloat(value);
-    if (!isNaN(num) && num > 0) {
-      setAnimationSpeed(num);
-    }
-  };
-
-  const handleFpsChange = (value: string) => {
-    setFpsText(value);
-    const num = parseFloat(value);
-    if (!isNaN(num) && num > 0) {
-      setFps(num);
     }
   };
 
@@ -96,10 +80,18 @@ export const RenderControls: React.FC<{
     const num = parseFloat(value);
     if (!isNaN(num) && num > 0) {
       setCardWidth(num);
+      // Auto-calculate speed based on the new width
+      const optimalSpeed = calculateOptimalSpeed(num);
+      setAnimationSpeed(optimalSpeed);
     } else {
       setCardWidth(value);
     }
   };
+
+  // Set FPS to default
+  React.useEffect(() => {
+    setFps(DEFAULT_FPS);
+  }, [setFps]);
 
   return (
     <InputContainer>
@@ -141,6 +133,7 @@ export const RenderControls: React.FC<{
           <label className="block text-sm font-medium text-foreground opacity-80 mb-1">
             Animation Type
           </label>
+          <span className="sr-only">Animation Type Selection</span>
           <Select
             disabled={state.status === "invoking" || state.status === "rendering" || state.status === "done"}
             onChange={setAnimationType}
@@ -148,28 +141,8 @@ export const RenderControls: React.FC<{
             options={ANIMATION_OPTIONS}
           ></Select>
         </div>
-        <div className="mb-2 flex-1">
-          <label className="block text-sm font-medium text-foreground opacity-80 mb-1">
-            Animation Speed (s/item)
-          </label>
-          <Input
-            disabled={state.status === "invoking" || state.status === "rendering" || state.status === "done"}
-            setText={handleAnimationSpeedChange}
-            text={animationSpeedText}
-          ></Input>
-        </div>
       </div>
       <div className="flex flex-row gap-4">
-        <div className="mb-2 flex-1">
-          <label className="block text-sm font-medium text-foreground opacity-80 mb-1">
-            FPS
-          </label>
-          <Input
-            disabled={state.status === "invoking" || state.status === "rendering" || state.status === "done"}
-            setText={handleFpsChange}
-            text={fpsText}
-          ></Input>
-        </div>
         <div className="mb-2 flex-1">
           <label className="block text-sm font-medium text-foreground opacity-80 mb-1">
             Background Color

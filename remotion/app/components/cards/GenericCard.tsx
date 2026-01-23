@@ -2,7 +2,10 @@ import React from "react";
 import { Img, spring, useCurrentFrame, useVideoConfig } from "remotion";
 import { loadFont } from "@remotion/google-fonts/Roboto";
 
-const { fontFamily } = loadFont();
+const { fontFamily } = loadFont("normal", {
+  weights: ["400", "700"],
+  subsets: ["latin"],
+});
 
 export interface GenericCardData {
   title: string | null;

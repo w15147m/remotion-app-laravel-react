@@ -1,19 +1,19 @@
 import React from "react";
-import { AbsoluteFill, useCurrentFrame, useVideoConfig, interpolate } from "remotion";
+import { AbsoluteFill, useCurrentFrame, useVideoConfig, interpolate, Easing } from "remotion";
 
-interface LinearScrollItem {
+interface EasingScrollItem {
   id: number;
   content: React.ReactNode;
 }
 
-interface LinearScrollAnimationProps {
-  items: LinearScrollItem[];
-  rotationDuration?: number; // Duration in seconds per item focus
+interface EasingScrollAnimationProps {
+  items: EasingScrollItem[];
+  rotationDuration?: number;
   videoTitle?: string;
   cardWidth?: number | string;
 }
 
-export const LinearScrollAnimation: React.FC<LinearScrollAnimationProps> = ({
+export const EasingScrollAnimation: React.FC<EasingScrollAnimationProps> = ({
   items,
   rotationDuration = 3,
   videoTitle,
@@ -26,16 +26,17 @@ export const LinearScrollAnimation: React.FC<LinearScrollAnimationProps> = ({
   const gap = 20;
   const itemSpacing = cardWidth + gap;
   const framesPerItem = fps * rotationDuration;
-  const progress = frame / framesPerItem;
+
+  // Current "virtual" scroll position with easing
+  const totalFrames = items.length * framesPerItem;
 
   return (
     <AbsoluteFill
       style={{
-        background: "linear-gradient(135deg, #FF9A9E 0%, #FECFEF 100%)",
+        background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
         overflow: "hidden",
       }}
     >
-      {/* Scroll Container */}
       <div
         style={{
           position: "relative",
@@ -46,11 +47,23 @@ export const LinearScrollAnimation: React.FC<LinearScrollAnimationProps> = ({
         }}
       >
         {items.map((item, index) => {
-
           const itemCount = items.length;
 
-          let dist = (index - progress) % itemCount;
+          // Easing logic: 
+          // We want the most deceleration right when the card is centered.
+          // We interpolate the "progress" using an easing function.
+          const easedProgress = interpolate(
+            frame % totalFrames,
+            items.map((_, i) => i * framesPerItem),
+            items.map((_, i) => i),
+            {
+              easing: Easing.inOut(Easing.quad),
+              extrapolateLeft: "extend",
+              extrapolateRight: "extend",
+            }
+          );
 
+          let dist = (index - easedProgress) % itemCount;
           if (dist < -itemCount / 2) dist += itemCount;
           if (dist > itemCount / 2) dist -= itemCount;
 
@@ -58,7 +71,7 @@ export const LinearScrollAnimation: React.FC<LinearScrollAnimationProps> = ({
 
           const opacity = interpolate(
             Math.abs(dist),
-            [0, 1.5, 2.5],
+            [0, 1.2, 2.2],
             [1, 1, 0],
             { extrapolateRight: "clamp" }
           );
@@ -66,24 +79,22 @@ export const LinearScrollAnimation: React.FC<LinearScrollAnimationProps> = ({
           const scale = interpolate(
             Math.abs(dist),
             [0, 1],
-            [1, 0.9],
+            [1, 0.85],
             { extrapolateRight: "clamp" }
           );
-
-          const zIndex = Math.round(100 - Math.abs(dist) * 10);
 
           return (
             <div
               key={item.id}
               style={{
                 position: "absolute",
-                left: "50%", // Start at center
+                left: "50%",
                 top: "50%",
                 width: `${cardWidth}px`,
-                height: "90%", // Allow space for title
+                height: "90%",
                 transform: `translateX(calc(-50% + ${Math.round(xOffset)}px)) translateY(-50%) scale(${scale})`,
                 opacity,
-                zIndex,
+                zIndex: Math.round(100 - Math.abs(dist) * 10),
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -98,7 +109,6 @@ export const LinearScrollAnimation: React.FC<LinearScrollAnimationProps> = ({
         })}
       </div>
 
-      {/* Video Title at Bottom */}
       {videoTitle && (
         <div
           style={{

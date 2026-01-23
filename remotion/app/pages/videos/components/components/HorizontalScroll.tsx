@@ -2,12 +2,13 @@ import React from "react";
 import { CircularCarouselAnimation } from "./components/CircularCarouselAnimation";
 import { CarouselAnimation } from "./components/CarouselAnimation";
 import { LinearScrollAnimation } from "./components/LinearScrollAnimation";
+import { EasingScrollAnimation } from "./components/EasingScrollAnimation";
 import { GenericCard, GenericCardData } from "../../../../components/cards/GenericCard";
 
 interface HorizontalScrollProps {
   cardsData?: GenericCardData[];
   videoTitle?: string;
-  animationType?: "carousel" | "circular" | "linear";
+  animationType?: "carousel" | "circular" | "linear" | "easing";
   animationSpeed?: number;
   cardHeight?: number | string;
   cardWidth?: number | string;
@@ -45,7 +46,11 @@ export const HorizontalScroll: React.FC<HorizontalScrollProps> = ({
   }
 
   if (animationType === "linear") {
-    return <LinearScrollAnimation items={carouselItems} rotationDuration={animationSpeed} videoTitle={videoTitle} />;
+    return <LinearScrollAnimation items={carouselItems} rotationDuration={animationSpeed} videoTitle={videoTitle} cardWidth={cardWidth} />;
+  }
+
+  if (animationType === "easing") {
+    return <EasingScrollAnimation items={carouselItems} rotationDuration={animationSpeed} videoTitle={videoTitle} cardWidth={cardWidth} />;
   }
 
   return <CarouselAnimation items={carouselItems} rotationDuration={animationSpeed} videoTitle={videoTitle} />;
