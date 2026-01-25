@@ -1,5 +1,6 @@
 import React from "react";
 import { AbsoluteFill, useCurrentFrame, useVideoConfig, interpolate, Easing } from "remotion";
+import { Trail } from "@remotion/motion-blur";
 
 interface EasingScrollItem {
   id: number;
@@ -37,77 +38,79 @@ export const EasingScrollAnimation: React.FC<EasingScrollAnimationProps> = ({
         overflow: "hidden",
       }}
     >
-      <div
-        style={{
-          position: "relative",
-          height: "100%",
-          width: "100%",
-          display: "flex",
-          alignItems: "center",
-        }}
-      >
-        {items.map((item, index) => {
-          const itemCount = items.length;
+      <Trail layers={4} lagInFrames={1} trailOpacity={1}>
+        <div
+          style={{
+            position: "relative",
+            height: "100%",
+            width: "100%",
+            display: "flex",
+            alignItems: "center",
+          }}
+        >
+          {items.map((item, index) => {
+            const itemCount = items.length;
 
-          // Easing logic: 
-          // We want the most deceleration right when the card is centered.
-          // We interpolate the "progress" using an easing function.
-          const easedProgress = interpolate(
-            frame % totalFrames,
-            items.map((_, i) => i * framesPerItem),
-            items.map((_, i) => i),
-            {
-              easing: Easing.inOut(Easing.quad),
-              extrapolateLeft: "extend",
-              extrapolateRight: "extend",
-            }
-          );
+            // Easing logic: 
+            // We want the most deceleration right when the card is centered.
+            // We interpolate the "progress" using an easing function.
+            const easedProgress = interpolate(
+              frame % totalFrames,
+              items.map((_, i) => i * framesPerItem),
+              items.map((_, i) => i),
+              {
+                easing: Easing.inOut(Easing.quad),
+                extrapolateLeft: "extend",
+                extrapolateRight: "extend",
+              }
+            );
 
-          let dist = (index - easedProgress) % itemCount;
-          if (dist < -itemCount / 2) dist += itemCount;
-          if (dist > itemCount / 2) dist -= itemCount;
+            let dist = (index - easedProgress) % itemCount;
+            if (dist < -itemCount / 2) dist += itemCount;
+            if (dist > itemCount / 2) dist -= itemCount;
 
-          const xOffset = dist * itemSpacing;
+            const xOffset = dist * itemSpacing;
 
-          const opacity = interpolate(
-            Math.abs(dist),
-            [0, 1.2, 2.2],
-            [1, 1, 0],
-            { extrapolateRight: "clamp" }
-          );
+            const opacity = interpolate(
+              Math.abs(dist),
+              [0, 1.2, 2.2],
+              [1, 1, 0],
+              { extrapolateRight: "clamp" }
+            );
 
-          const scale = interpolate(
-            Math.abs(dist),
-            [0, 1],
-            [1, 0.85],
-            { extrapolateRight: "clamp" }
-          );
+            const scale = interpolate(
+              Math.abs(dist),
+              [0, 1],
+              [1, 0.85],
+              { extrapolateRight: "clamp" }
+            );
 
-          return (
-            <div
-              key={item.id}
-              style={{
-                position: "absolute",
-                left: "50%",
-                top: "50%",
-                width: `${cardWidth}px`,
-                height: "90%",
-                transform: `translateX(calc(-50% + ${Math.round(xOffset)}px)) translateY(-50%) scale(${scale})`,
-                opacity,
-                zIndex: Math.round(100 - Math.abs(dist) * 10),
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                willChange: "transform",
-                backfaceVisibility: "hidden",
-                WebkitFontSmoothing: "antialiased",
-              }}
-            >
-              {item.content}
-            </div>
-          );
-        })}
-      </div>
+            return (
+              <div
+                key={item.id}
+                style={{
+                  position: "absolute",
+                  left: "50%",
+                  top: "50%",
+                  width: `${cardWidth}px`,
+                  height: "90%",
+                  transform: `translateX(calc(-50% + ${Math.round(xOffset)}px)) translateY(-50%) scale(${scale})`,
+                  opacity,
+                  zIndex: Math.round(100 - Math.abs(dist) * 10),
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  willChange: "transform",
+                  backfaceVisibility: "hidden",
+                  WebkitFontSmoothing: "antialiased",
+                }}
+              >
+                {item.content}
+              </div>
+            );
+          })}
+        </div>
+      </Trail>
 
       {videoTitle && (
         <div

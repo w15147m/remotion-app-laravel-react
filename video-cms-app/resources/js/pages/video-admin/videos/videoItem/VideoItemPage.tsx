@@ -39,7 +39,9 @@ interface VideoItemPageProps {
 
 export default function VideoItemPage({ video, video_items: initialItems }: VideoItemPageProps) {
   const [items, setItems] = useState<VideoItem[]>(initialItems);
-
+console.log('====================================');
+console.log('Items:', items);
+console.log('====================================');
   const pageInfo = {
     title: `Items for: ${video.title}`,
     btnText: 'New Item',
@@ -74,10 +76,10 @@ export default function VideoItemPage({ video, video_items: initialItems }: Vide
                 Seq.
               </th>
               <th className="px-4 py-3 text-left text-xs font-medium tracking-wider text-neutral-500 uppercase dark:text-neutral-400">
-                Media
+                Image
               </th>
               <th className="px-4 py-3 text-left text-xs font-medium tracking-wider text-neutral-500 uppercase dark:text-neutral-400">
-                Title / Subtitle
+                Title / Sub
               </th>
               <th className="px-4 py-3 text-left text-xs font-medium tracking-wider text-neutral-500 uppercase dark:text-neutral-400">
                 Icon

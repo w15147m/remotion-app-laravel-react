@@ -1,5 +1,6 @@
 import React from "react";
 import { AbsoluteFill, useCurrentFrame, useVideoConfig, interpolate } from "remotion";
+import { Trail } from "@remotion/motion-blur";
 
 interface LinearScrollItem {
   id: number;
@@ -36,67 +37,69 @@ export const LinearScrollAnimation: React.FC<LinearScrollAnimationProps> = ({
       }}
     >
       {/* Scroll Container */}
-      <div
-        style={{
-          position: "relative",
-          height: "100%",
-          width: "100%",
-          display: "flex",
-          alignItems: "center",
-        }}
-      >
-        {items.map((item, index) => {
+      <Trail layers={4} lagInFrames={1} trailOpacity={1}>
+        <div
+          style={{
+            position: "relative",
+            height: "100%",
+            width: "100%",
+            display: "flex",
+            alignItems: "center",
+          }}
+        >
+          {items.map((item, index) => {
 
-          const itemCount = items.length;
+            const itemCount = items.length;
 
-          let dist = (index - progress) % itemCount;
+            let dist = (index - progress) % itemCount;
 
-          if (dist < -itemCount / 2) dist += itemCount;
-          if (dist > itemCount / 2) dist -= itemCount;
+            if (dist < -itemCount / 2) dist += itemCount;
+            if (dist > itemCount / 2) dist -= itemCount;
 
-          const xOffset = dist * itemSpacing;
+            const xOffset = dist * itemSpacing;
 
-          const opacity = interpolate(
-            Math.abs(dist),
-            [0, 1.5, 2.5],
-            [1, 1, 0],
-            { extrapolateRight: "clamp" }
-          );
+            const opacity = interpolate(
+              Math.abs(dist),
+              [0, 1.5, 2.5],
+              [1, 1, 0],
+              { extrapolateRight: "clamp" }
+            );
 
-          const scale = interpolate(
-            Math.abs(dist),
-            [0, 1],
-            [1, 0.9],
-            { extrapolateRight: "clamp" }
-          );
+            const scale = interpolate(
+              Math.abs(dist),
+              [0, 1],
+              [1, 0.9],
+              { extrapolateRight: "clamp" }
+            );
 
-          const zIndex = Math.round(100 - Math.abs(dist) * 10);
+            const zIndex = Math.round(100 - Math.abs(dist) * 10);
 
-          return (
-            <div
-              key={item.id}
-              style={{
-                position: "absolute",
-                left: "50%", // Start at center
-                top: "50%",
-                width: `${cardWidth}px`,
-                height: "90%", // Allow space for title
-                transform: `translateX(calc(-50% + ${Math.round(xOffset)}px)) translateY(-50%) scale(${scale})`,
-                opacity,
-                zIndex,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                willChange: "transform",
-                backfaceVisibility: "hidden",
-                WebkitFontSmoothing: "antialiased",
-              }}
-            >
-              {item.content}
-            </div>
-          );
-        })}
-      </div>
+            return (
+              <div
+                key={item.id}
+                style={{
+                  position: "absolute",
+                  left: "50%", // Start at center
+                  top: "50%",
+                  width: `${cardWidth}px`,
+                  height: "90%", // Allow space for title
+                  transform: `translateX(calc(-50% + ${Math.round(xOffset)}px)) translateY(-50%) scale(${scale})`,
+                  opacity,
+                  zIndex,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  willChange: "transform",
+                  backfaceVisibility: "hidden",
+                  WebkitFontSmoothing: "antialiased",
+                }}
+              >
+                {item.content}
+              </div>
+            );
+          })}
+        </div>
+      </Trail>
 
       {/* Video Title at Bottom */}
       {videoTitle && (
