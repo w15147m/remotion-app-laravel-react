@@ -1,7 +1,5 @@
-import React from "react";
 import { CircularCarouselAnimation } from "./components/CircularCarouselAnimation";
 import { CarouselAnimation } from "./components/CarouselAnimation";
-import { LinearScrollAnimation } from "./components/LinearScrollAnimation";
 import { EasingScrollAnimation } from "./components/EasingScrollAnimation";
 import { PlayerStatsCard } from "../../../../components/cards/PlayerStatsCard";
 import { ImageStatsCard } from "../../../../components/cards/ImageStatsCard";
@@ -55,10 +53,6 @@ export const HorizontalScroll: React.FC<HorizontalScrollProps> = ({
   // Switch between animation types
   if (animationType === "circular") {
     return <CircularCarouselAnimation items={carouselItems} rotationDuration={animationSpeed} videoTitle={videoTitle} cardWidth={cardWidth} />;
-  }
-
-  if (animationType === "linear") {
-    return <LinearScrollAnimation items={carouselItems} rotationDuration={animationSpeed} videoTitle={videoTitle} cardWidth={cardWidth} />;
   }
 
   if (animationType === "easing") {
