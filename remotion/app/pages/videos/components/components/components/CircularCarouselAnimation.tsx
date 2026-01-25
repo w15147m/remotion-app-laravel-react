@@ -55,22 +55,28 @@ export const CircularCarouselAnimation: React.FC<CircularCarouselAnimationProps>
           const opacity = interpolate(
             dist,
             range,
-            [0, 0.7, 1, 1, 1, 0.7, 0],
+            [0, 0.5, 0.9, 1, 0.9, 0.5, 0],
             { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
           );
 
+          // Spread out positions: 50 is center. 
+          // 0 -> 50%
+          // -1 -> 35%
+          // 1 -> 65%
+          // -2 -> 20%
+          // 2 -> 80%
           const left = interpolate(
             dist,
             range,
-            [50, 40, 28, 50, 72, 60, 50], // Map to percentage strings later
+            [50, 15, 30, 50, 70, 85, 50],
             { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
           );
 
-          // Width in px
+          // Width in px - gradual reduction
           const width = interpolate(
             dist,
             range,
-            [300, 350, 420, 500, 420, 350, 300],
+            [200, 300, 400, 500, 400, 300, 200],
             { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
           );
 
@@ -78,37 +84,26 @@ export const CircularCarouselAnimation: React.FC<CircularCarouselAnimationProps>
           const height = interpolate(
             dist,
             range,
-            [400, 500, 600, 700, 600, 500, 400],
+            [300, 400, 550, 700, 550, 400, 300],
             { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
           );
 
-          // Z-index
+          // Z-index - minimal layering needed if spread is wide, but good for overlap
           const zIndex = Math.round(interpolate(
             dist,
             range,
-            [0, 2, 5, 10, 5, 2, 0],
+            [0, 1, 5, 10, 5, 1, 0],
             { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
           ));
 
-          // Translate X % (relative to element self width)
-          // Selected: -50%
-          // Next/Prev: -50%
-          // NextRightSecond: -35% 
-          // PrevLeftSecond: -65%
-          // Hidden: -50%
-          const translateX = interpolate(
-            dist,
-            range,
-            [-50, -65, -50, -50, -50, -35, -50],
-            { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
-          );
+          // Translate X % - Standard centering (-50%) for all since we rely on `left` for positioning
+          const translateX = "-50";
 
-          // Translate Y % 
-          // Second items moved down by 5%
+          // Translate Y % - Minimal curve
           const translateY = interpolate(
             dist,
             range,
-            [0, 5, 0, 0, 0, 5, 0],
+            [0, 10, 5, 0, 5, 10, 0],
             { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
           );
 
