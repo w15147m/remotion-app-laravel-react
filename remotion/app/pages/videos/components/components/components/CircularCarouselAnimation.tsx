@@ -10,22 +10,24 @@ interface CircularCarouselAnimationProps {
   items: CircularCarouselItem[];
   rotationDuration?: number; // Seconds per item
   videoTitle?: string;
+  cardWidth?: number | string;
 }
 
 export const CircularCarouselAnimation: React.FC<CircularCarouselAnimationProps> = ({
   items,
   rotationDuration = 2,
   videoTitle,
+  cardWidth = 500,
 }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
   const itemCount = items.length;
-  // Calculate continuous progress
-  // frame 0 -> 0
-  // frame = rotationDuration * fps -> 1
   const framesPerItem = fps * rotationDuration;
   const progress = frame / framesPerItem;
+
+  // Ensure numeric width for calculations if needed, though we use it directly for style
+  const numericWidth = typeof cardWidth === 'number' ? cardWidth : parseInt(cardWidth as string) || 500;
 
   return (
     <AbsoluteFill
@@ -52,43 +54,37 @@ export const CircularCarouselAnimation: React.FC<CircularCarouselAnimationProps>
 
           const range = [-3, -2, -1, 0, 1, 2, 3];
 
+          // Opacity: Outer cards visible but faded
           const opacity = interpolate(
             dist,
             range,
-            [0, 0.5, 0.9, 1, 0.9, 0.5, 0],
+            [0, 0.8, 0.9, 1, 0.9, 0.8, 0],
             { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
           );
 
-          // Spread out positions: 50 is center. 
-          // 0 -> 50%
-          // -1 -> 35%
-          // 1 -> 65%
-          // -2 -> 20%
-          // 2 -> 80%
+          // Spread: Wider spread to reduce overlap
+          // Center: 50%
+          // Level 1: 30% / 70% 
+          // Level 2: 10% / 90% (Pushed almost to edges)
           const left = interpolate(
             dist,
             range,
-            [50, 15, 30, 50, 70, 85, 50],
+            [50, 10, 30, 50, 70, 90, 50],
             { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
           );
 
-          // Width in px - gradual reduction
-          const width = interpolate(
-            dist,
-            range,
-            [200, 300, 400, 500, 400, 300, 200],
-            { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
-          );
+          // Width: Constant for all cards as requested
+          const width = numericWidth;
 
-          // Height in px
+          // Height: Slight scale effect for depth, but much less drastic
           const height = interpolate(
             dist,
             range,
-            [300, 400, 550, 700, 550, 400, 300],
+            [500, 600, 650, 700, 650, 600, 500],
             { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
           );
 
-          // Z-index - minimal layering needed if spread is wide, but good for overlap
+          // Z-index
           const zIndex = Math.round(interpolate(
             dist,
             range,
@@ -96,14 +92,14 @@ export const CircularCarouselAnimation: React.FC<CircularCarouselAnimationProps>
             { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
           ));
 
-          // Translate X % - Standard centering (-50%) for all since we rely on `left` for positioning
+          // Translate X % 
           const translateX = "-50";
 
-          // Translate Y % - Minimal curve
+          // Translate Y % 
           const translateY = interpolate(
             dist,
             range,
-            [0, 10, 5, 0, 5, 10, 0],
+            [0, 5, 2, 0, 2, 5, 0],
             { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
           );
 

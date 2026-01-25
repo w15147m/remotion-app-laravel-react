@@ -52,7 +52,7 @@ export const HorizontalScroll: React.FC<HorizontalScrollProps> = ({
 
   // Switch between animation types
   if (animationType === "circular") {
-    return <CircularCarouselAnimation items={carouselItems} rotationDuration={animationSpeed} videoTitle={videoTitle} />;
+    return <CircularCarouselAnimation items={carouselItems} rotationDuration={animationSpeed} videoTitle={videoTitle} cardWidth={cardWidth} />;
   }
 
   if (animationType === "linear") {
