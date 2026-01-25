@@ -7,7 +7,7 @@ import { FaSignal, FaWifi, FaBatteryHalf, FaArrowLeft, FaIceCream, FaCheck, FaCh
 const stepsData = [
   {
     title: 'Choose Cone',
-    item: 0,
+    item: 2, // Start at middle item to prevent backward animation
     items: [
       { id: '1', image: 'https://i.ibb.co/2h275Q8/waffle-cone.png', title: 'Waffle cone' },
       { id: '2', image: 'https://i.ibb.co/pnK7Hqz/chocolate-cone.png', title: 'Chocolate cone' },
@@ -17,7 +17,7 @@ const stepsData = [
   },
   {
     title: 'Choose Flavor',
-    item: 0,
+    item: 2,
     items: [
       { id: '1', image: 'https://i.ibb.co/fMN3HST/melon-flavor.png', title: 'Melon Flavor' },
       { id: '2', image: 'https://i.ibb.co/8XgX4rg//banana-flavor.png', title: 'Banana Flavor' },
@@ -224,27 +224,25 @@ export const IceCreamApp = () => {
   const [step, setStep] = useState(0);
   const [steps, setSteps] = useState(stepsData);
 
-  // Auto-Play Logic
+  // Auto-Play Logic - Single step, forward animation only
   useEffect(() => {
-    if (frame < fps * 1.5) {
-      setLoading(true);
-    } else if (frame < fps * 4) {
-      setLoading(false);
-      setScreen('welcome');
-    } else if (frame < fps * 14) {
-      setScreen('producer');
-      if (frame < fps * 6) setStep(0);
-      else if (frame < fps * 9) setStep(1);
-      else if (frame < fps * 11) setStep(2);
-      else setStep(3);
+    setLoading(false);
+    setScreen('producer');
+    setStep(0); // Always stay on step 0 (Choose Cone)
 
-      if (frame > fps * 5 && frame < fps * 5.2) handleSetItem(0, 1);
-      if (frame > fps * 5.5 && frame < fps * 5.7) handleSetItem(0, 2);
-      if (frame > fps * 7.5 && frame < fps * 7.7) handleSetItem(1, 2);
-      if (frame > fps * 10 && frame < fps * 10.2) handleSetItem(2, 0);
-    } else {
-      setScreen('final');
-    }
+    // Smoothly cycle through items 0 → 1 → 2 → 3 → 0...
+    const secondsPerItem = 2;
+    const totalItems = 4;
+    const targetItem = Math.floor(frame / (fps * secondsPerItem)) % totalItems;
+
+    // Only update if moving forward to prevent backward animation
+    setSteps(prev => {
+      const newSteps = [...prev];
+      if (targetItem !== newSteps[0].item) {
+        newSteps[0].item = targetItem;
+      }
+      return newSteps;
+    });
   }, [frame, fps]);
 
   const handleSetItem = (stepIndex: number, itemIndex: number) => {
@@ -276,25 +274,19 @@ export const IceCreamApp = () => {
           <div id="mobile-container">
             <StatusBar time="12:00" />
 
-            {loading ? (
-              <SplashScreen dead={frame > fps * 1.2} />
-            ) : (
-              <div id="page-container">
-                <div className={`page-container-transformer`}>
-                  {screen === 'welcome' && <WelcomeScreen onStart={() => setScreen('producer')} />}
-                  {screen === 'producer' && (
-                    <ProducerScreen
-                      step={step}
-                      steps={steps}
-                      setStep={setStep}
-                      setItem={handleSetItem}
-                      onReview={handleConfirm}
-                    />
-                  )}
-                  {screen === 'final' && <FinalScreen steps={steps} />}
-                </div>
+            <div id="page-container">
+              <div className={`page-container-transformer`}>
+                {screen === 'producer' && (
+                  <ProducerScreen
+                    step={step}
+                    steps={steps}
+                    setStep={setStep}
+                    setItem={handleSetItem}
+                    onReview={handleConfirm}
+                  />
+                )}
               </div>
-            )}
+            </div>
 
             <div id="action-bar">
               <button className="f-left"><FaHeart /></button>
