@@ -132,10 +132,10 @@ export default function Index() {
     setAnimationType(value);
     if (typeof window !== "undefined") {
       sessionStorage.setItem("animationType", value);
-      window.location.reload();
     }
   };
 
+  // ... (restored handlers)
   const handleAnimationSpeedChange = (value: number) => {
     setAnimationSpeed(value);
     if (typeof window !== "undefined") {
@@ -185,13 +185,13 @@ export default function Index() {
       audioFileName: audioFileName || undefined,
       cardsData: cardsData,
       videoTitle: videoTitle,
-      animationType: animationType as "carousel" | "circular" | "linear", // fixed casting to include 'linear'
+      animationType: animationType as "carousel" | "circular" | "easing" | "ice-cream",
       animationSpeed: animationSpeed,
       fps: fps,
       backgroundColor: backgroundColor,
       cardHeight: cardHeight,
       cardWidth: cardWidth,
-      cardStyle: cardStyle as "basic" | "player-stats" | "minimal",
+      cardStyle: cardStyle as "player-stats" | "image-stats" | "full-image",
     };
   }, [text, durationInSeconds, audioFileName, cardsData, videoTitle, animationType, animationSpeed, fps, backgroundColor, cardHeight, cardWidth, cardStyle]);
 
@@ -203,7 +203,7 @@ export default function Index() {
     <div className="max-w-screen-md m-auto mb-5">
       <div className="overflow-hidden rounded-geist shadow-[0_0_200px_rgba(0,0,0,0.15)] mb-5 ">
         <Player
-          key={`player-${audioFileName}`}
+          key={`player-${audioFileName}-${animationType}-${cardStyle}`}
           component={Main}
           inputProps={inputProps}
           durationInFrames={durationInFrames}

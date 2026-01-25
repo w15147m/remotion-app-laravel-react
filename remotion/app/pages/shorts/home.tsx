@@ -102,12 +102,26 @@ export default function Index() {
     }
   }, []);
 
+  const [cardStyle, setCardStyle] = useState<string>(() => {
+    if (typeof window !== "undefined") {
+      return sessionStorage.getItem("cardStyle") || "basic";
+    }
+    return "basic";
+  });
+
   // Save audioFileName to sessionStorage when changed
   useEffect(() => {
     if (typeof window !== "undefined") {
       sessionStorage.setItem("audioFileName", audioFileName);
     }
   }, [audioFileName]);
+
+  const handleCardStyleChange = (value: string) => {
+    setCardStyle(value);
+    if (typeof window !== "undefined") {
+      sessionStorage.setItem("cardStyle", value);
+    }
+  };
 
   const handleAnimationTypeChange = (value: string) => {
     setAnimationType(value);
@@ -123,7 +137,6 @@ export default function Index() {
     }
   };
 
-  // Handlers
   const handleFpsChange = (value: number) => {
     setFps(value);
     if (typeof window !== "undefined") {
@@ -162,15 +175,16 @@ export default function Index() {
       title: text,
       durationInSeconds,
       audioFileName,
-      animationType: animationType as "carousel" | "circular" | "linear",
+      animationType: animationType as "carousel" | "circular" | "easing" | "ice-cream",
       animationSpeed,
       cardsData,
       fps,
       backgroundColor,
       cardHeight,
       cardWidth,
+      cardStyle: cardStyle as "player-stats" | "image-stats" | "full-image",
     }),
-    [text, durationInSeconds, audioFileName, animationType, animationSpeed, cardsData, fps, backgroundColor, cardHeight, cardWidth]
+    [text, durationInSeconds, audioFileName, animationType, animationSpeed, cardsData, fps, backgroundColor, cardHeight, cardWidth, cardStyle]
   );
 
   return (
@@ -178,7 +192,7 @@ export default function Index() {
       <div className="flex flex-col items-start gap-geist-half lg:flex-row">
         <div className="flex max-w-[360px] min-w-[360px] flex-col gap-geist-half">
           <Player
-            key={`player-${audioFileName}`}
+            key={`player-${audioFileName}-${animationType}-${cardStyle}`}
             component={Main}
             inputProps={inputProps}
             durationInFrames={durationInFrames}
@@ -214,6 +228,8 @@ export default function Index() {
             setCardHeight={handleCardHeightChange}
             cardWidth={cardWidth}
             setCardWidth={handleCardWidthChange}
+            cardStyle={cardStyle}
+            setCardStyle={handleCardStyleChange}
           />
         </div>
       </div>

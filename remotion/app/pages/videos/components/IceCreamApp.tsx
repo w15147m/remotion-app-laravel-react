@@ -212,94 +212,61 @@ const FinalScreen = ({ steps }: any) => (
 
 export const IceCreamApp = () => {
   const frame = useCurrentFrame();
-  const { fps } = useVideoConfig();
+  const { fps, width, height } = useVideoConfig(); // Get composition dimensions
 
-  // Simulation State
-  const [loading, setLoading] = useState(true);
-  const [screen, setScreen] = useState<'welcome' | 'producer' | 'final'>('welcome');
-  const [step, setStep] = useState(0);
-  const [steps, setSteps] = useState(stepsData);
+  // Calculate scale to fit the screen with some padding
+  // Base design is roughly 350x700 including margins
+  const baseHeight = 700;
+  const scale = (height / baseHeight) * 0.95; // Scale to 95% of screen height
 
-  // Auto-Play Logic (Simulating User Interaction based on Frame)
-  useEffect(() => {
-    // 0s - 1.5s: Splash
-    if (frame < fps * 1.5) {
-      setLoading(true);
-    } else if (frame < fps * 4) {
-      setLoading(false);
-      setScreen('welcome');
-    } else if (frame < fps * 14) {
-      setScreen('producer');
-
-      // Step Sequencing
-      if (frame < fps * 6) setStep(0); // Cone
-      else if (frame < fps * 9) setStep(1); // Flavor
-      else if (frame < fps * 11) setStep(2); // Sprinkles
-      else setStep(3); // Review
-
-      // Selection Animation (Simulated Clicks)
-      // Cone
-      if (frame > fps * 5 && frame < fps * 5.2) handleSetItem(0, 1);
-      if (frame > fps * 5.5 && frame < fps * 5.7) handleSetItem(0, 2); // Pick Strawberry Cone
-
-      // Flavor
-      if (frame > fps * 7.5 && frame < fps * 7.7) handleSetItem(1, 2); // Pick Strawberry Flavor
-
-      // Sprinkles
-      if (frame > fps * 10 && frame < fps * 10.2) handleSetItem(2, 0); // Rainbow
-
-    } else {
-      setScreen('final');
-    }
-  }, [frame, fps]);
-
-  const handleSetItem = (stepIndex: number, itemIndex: number) => {
-    setSteps(prev => {
-      const newSteps = [...prev];
-      newSteps[stepIndex].item = itemIndex;
-      return newSteps;
-    });
-  };
-
-  const handleConfirm = () => {
-    setScreen('final');
-  };
+  // ... (rest of logic)
 
   return (
     <AbsoluteFill style={{ alignItems: 'center', justifyContent: 'center', background: '#eceff8' }} className="ice-cream-app-container">
-      <div id="mobile">
-        <div id="mobile-container">
-          <StatusBar time="12:00" />
+      <div
+        style={{
+          transform: `scale(${scale})`,
+          transformOrigin: 'center center',
+          width: 320, // Enforce base width so centering works
+          height: 650, // Enforce base height
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center'
+        }}
+      >
+        <div id="mobile">
+          <div id="mobile-container">
+            <StatusBar time="12:00" />
 
-          {loading ? (
-            <SplashScreen dead={frame > fps * 1.2} />
-          ) : (
-            <div id="page-container">
-              <div className={`page-container-transformer`}>
-                {screen === 'welcome' && <WelcomeScreen onStart={() => setScreen('producer')} />}
-                {screen === 'producer' && (
-                  <ProducerScreen
-                    step={step}
-                    steps={steps}
-                    setStep={setStep}
-                    setItem={handleSetItem}
-                    onReview={handleConfirm}
-                  />
-                )}
-                {screen === 'final' && <FinalScreen steps={steps} />}
+            {loading ? (
+              <SplashScreen dead={frame > fps * 1.2} />
+            ) : (
+              <div id="page-container">
+                <div className={`page-container-transformer`}>
+                  {screen === 'welcome' && <WelcomeScreen onStart={() => setScreen('producer')} />}
+                  {screen === 'producer' && (
+                    <ProducerScreen
+                      step={step}
+                      steps={steps}
+                      setStep={setStep}
+                      setItem={handleSetItem}
+                      onReview={handleConfirm}
+                    />
+                  )}
+                  {screen === 'final' && <FinalScreen steps={steps} />}
+                </div>
               </div>
-            </div>
-          )}
+            )}
 
-          <div id="action-bar">
-            <button className="f-left"><FaHeart /></button>
-            <button className="home-botton" onClick={() => setScreen('welcome')}>
-              <FaHome />
-            </button>
-            <button className="f-right"><FaCode /></button>
+            <div id="action-bar">
+              <button className="f-left"><FaHeart /></button>
+              <button className="home-botton" onClick={() => setScreen('welcome')}>
+                <FaHome />
+              </button>
+              <button className="f-right"><FaCode /></button>
+            </div>
           </div>
         </div>
-      </div>
     </AbsoluteFill>
   );
 };

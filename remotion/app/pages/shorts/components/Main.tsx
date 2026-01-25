@@ -8,44 +8,37 @@ import {
 } from "remotion";
 import React from "react";
 import { CompositionProps } from "../../../remotion/schemata";
+import { HorizontalScroll } from "../../videos/components/components/HorizontalScroll";
 import { audioDurations } from "../../../remotion/audioData";
-import { RemotionCarousel, RemotionCarouselCard } from "./components/RemotionCarousel";
 
 const container: React.CSSProperties = {
-  background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+  backgroundColor: "white",
 };
 
-export const Main = ({ title, audioFileName, cardsData }: z.infer<typeof CompositionProps>) => {
+export const Main = ({ title, audioFileName, cardsData, videoTitle, animationType, animationSpeed, backgroundColor, cardHeight, cardWidth, cardStyle }: z.infer<typeof CompositionProps>) => {
   const { fps } = useVideoConfig();
 
-  // Use cardsData if available, otherwise show a placeholder
-  const cards = cardsData && cardsData.length > 0 ? cardsData : [
-    { title: "No Data", subtitle: "Add cards in the data editor" }
-  ];
+  const dynamicContainer: React.CSSProperties = {
+    ...container,
+    backgroundColor: backgroundColor || "white",
+  };
 
   return (
-    <AbsoluteFill style={container}>
+    <AbsoluteFill style={dynamicContainer}>
       {audioFileName && (
         <Loop durationInFrames={Math.ceil((audioDurations[audioFileName] || 10) * fps)}>
           <Audio src={staticFile(`audio/${audioFileName}`)} volume={1} />
         </Loop>
       )}
-      <AbsoluteFill
-        style={{
-          justifyContent: "center",
-          alignItems: "center",
-          display: "flex",
-        }}
-      >
-        <RemotionCarousel transitionDuration={2}>
-          {cards.map((card, i) => (
-            <RemotionCarouselCard
-              key={i}
-              data={card}
-            />
-          ))}
-        </RemotionCarousel>
-      </AbsoluteFill>
+      <HorizontalScroll
+        cardsData={cardsData}
+        videoTitle={videoTitle}
+        animationType={animationType}
+        animationSpeed={animationSpeed}
+        cardHeight={cardHeight}
+        cardWidth={cardWidth}
+        cardStyle={cardStyle}
+      />
     </AbsoluteFill>
   );
 };
