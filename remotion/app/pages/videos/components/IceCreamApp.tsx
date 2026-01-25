@@ -289,11 +289,8 @@ export const IceCreamApp = () => {
             </div>
 
             <div id="action-bar">
-              <button className="f-left"><FaHeart /></button>
-              <button className="home-botton" onClick={() => setScreen('welcome')}>
-                <FaHome />
-              </button>
-              <button className="f-right"><FaCode /></button>
+              <button className="f-left"></button>
+              <button className="f-right"></button>
             </div>
           </div>
         </div>
