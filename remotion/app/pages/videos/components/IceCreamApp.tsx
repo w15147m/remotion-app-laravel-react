@@ -212,14 +212,52 @@ const FinalScreen = ({ steps }: any) => (
 
 export const IceCreamApp = () => {
   const frame = useCurrentFrame();
-  const { fps, width, height } = useVideoConfig(); // Get composition dimensions
+  const { fps, height } = useVideoConfig();
 
-  // Calculate scale to fit the screen with some padding
-  // Base design is roughly 350x700 including margins
+  // Calculate scale to fit the screen
   const baseHeight = 700;
-  const scale = (height / baseHeight) * 0.95; // Scale to 95% of screen height
+  const scale = (height / baseHeight) * 0.95;
 
-  // ... (rest of logic)
+  // Simulation State
+  const [loading, setLoading] = useState(true);
+  const [screen, setScreen] = useState<'welcome' | 'producer' | 'final'>('welcome');
+  const [step, setStep] = useState(0);
+  const [steps, setSteps] = useState(stepsData);
+
+  // Auto-Play Logic
+  useEffect(() => {
+    if (frame < fps * 1.5) {
+      setLoading(true);
+    } else if (frame < fps * 4) {
+      setLoading(false);
+      setScreen('welcome');
+    } else if (frame < fps * 14) {
+      setScreen('producer');
+      if (frame < fps * 6) setStep(0);
+      else if (frame < fps * 9) setStep(1);
+      else if (frame < fps * 11) setStep(2);
+      else setStep(3);
+
+      if (frame > fps * 5 && frame < fps * 5.2) handleSetItem(0, 1);
+      if (frame > fps * 5.5 && frame < fps * 5.7) handleSetItem(0, 2);
+      if (frame > fps * 7.5 && frame < fps * 7.7) handleSetItem(1, 2);
+      if (frame > fps * 10 && frame < fps * 10.2) handleSetItem(2, 0);
+    } else {
+      setScreen('final');
+    }
+  }, [frame, fps]);
+
+  const handleSetItem = (stepIndex: number, itemIndex: number) => {
+    setSteps(prev => {
+      const newSteps = [...prev];
+      newSteps[stepIndex].item = itemIndex;
+      return newSteps;
+    });
+  };
+
+  const handleConfirm = () => {
+    setScreen('final');
+  };
 
   return (
     <AbsoluteFill style={{ alignItems: 'center', justifyContent: 'center', background: '#eceff8' }} className="ice-cream-app-container">
@@ -227,8 +265,8 @@ export const IceCreamApp = () => {
         style={{
           transform: `scale(${scale})`,
           transformOrigin: 'center center',
-          width: 320, // Enforce base width so centering works
-          height: 650, // Enforce base height
+          width: 320,
+          height: 650,
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center'
@@ -267,6 +305,7 @@ export const IceCreamApp = () => {
             </div>
           </div>
         </div>
+      </div>
     </AbsoluteFill>
   );
 };
