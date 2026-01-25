@@ -39,9 +39,9 @@ interface VideoItemPageProps {
 
 export default function VideoItemPage({ video, video_items: initialItems }: VideoItemPageProps) {
   const [items, setItems] = useState<VideoItem[]>(initialItems);
-console.log('====================================');
-console.log('Items:', items);
-console.log('====================================');
+// console.log('====================================');
+// console.log('Items:', items);
+// console.log('====================================');
   const pageInfo = {
     title: `Items for: ${video.title}`,
     btnText: 'New Item',

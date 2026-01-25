@@ -99,6 +99,15 @@ export default function Index() {
     return 400;
   });
 
+
+
+  const [cardStyle, setCardStyle] = useState<string>(() => {
+    if (typeof window !== "undefined") {
+      return sessionStorage.getItem("cardStyle") || "basic";
+    }
+    return "basic";
+  });
+
   // On mount, load data from data.js and save to sessionStorage
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -131,10 +140,6 @@ export default function Index() {
     setAnimationSpeed(value);
     if (typeof window !== "undefined") {
       sessionStorage.setItem("animationSpeed", value.toString());
-      // No reload needed for speed if we want it to be responsive, 
-      // but other changes reload, so let's be consistent if needed.
-      // Actually, speed change shouldn't require a full reload if the Player handles inputProps change.
-      // But the other handlers reload because of audio and type.
     }
   };
 
@@ -166,6 +171,13 @@ export default function Index() {
     }
   };
 
+  const handleCardStyleChange = (value: string) => {
+    setCardStyle(value);
+    if (typeof window !== "undefined") {
+      sessionStorage.setItem("cardStyle", value);
+    }
+  };
+
   const inputProps: z.infer<typeof CompositionProps> = useMemo(() => {
     return {
       title: text,
@@ -179,8 +191,9 @@ export default function Index() {
       backgroundColor: backgroundColor,
       cardHeight: cardHeight,
       cardWidth: cardWidth,
+      cardStyle: cardStyle as "basic" | "player-stats" | "minimal",
     };
-  }, [text, durationInSeconds, audioFileName, cardsData, videoTitle, animationType, animationSpeed, fps, backgroundColor, cardHeight, cardWidth]);
+  }, [text, durationInSeconds, audioFileName, cardsData, videoTitle, animationType, animationSpeed, fps, backgroundColor, cardHeight, cardWidth, cardStyle]);
 
   const durationInFrames = useMemo(() => {
     return Math.round(durationInSeconds * COMPOSITION_FPS);
@@ -224,6 +237,8 @@ export default function Index() {
         setCardHeight={handleCardHeightChange}
         cardWidth={cardWidth}
         setCardWidth={handleCardWidthChange}
+        cardStyle={cardStyle}
+        setCardStyle={handleCardStyleChange}
       ></RenderControls>
 
     </div>

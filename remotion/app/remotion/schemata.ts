@@ -25,6 +25,7 @@ export const CompositionProps = z.object({
   backgroundColor: z.string().optional(),
   cardHeight: z.union([z.number(), z.string()]).optional(),
   cardWidth: z.union([z.number(), z.string()]).optional(),
+  cardStyle: z.enum(["basic", "player-stats", "minimal"]).optional(),
 });
 
 export const defaultMyCompProps: z.infer<typeof CompositionProps> = {
@@ -39,6 +40,7 @@ export const defaultMyCompProps: z.infer<typeof CompositionProps> = {
   backgroundColor: "#ffffff",
   cardHeight: 600,
   cardWidth: 400,
+  cardStyle: "basic",
 };
 
 

@@ -30,6 +30,12 @@ const ANIMATION_OPTIONS = [
   { label: "Smooth Easing Scroll", value: "easing" },
 ];
 
+const CARD_STYLE_OPTIONS = [
+  { label: "Basic Card", value: "basic" },
+  { label: "Player Stats (Premium)", value: "player-stats" },
+  { label: "Minimal (Clean)", value: "minimal" },
+];
+
 export const RenderControls: React.FC<{
   text: string;
   setText: React.Dispatch<React.SetStateAction<string>>;
@@ -51,7 +57,9 @@ export const RenderControls: React.FC<{
   setCardWidth: (value: number | string) => void;
   inputProps: z.infer<typeof CompositionProps>;
   compositionId?: string;
-}> = ({ text, setText, durationInSeconds, setDurationInSeconds, audioFileName, setAudioFileName, animationType, setAnimationType, animationSpeed, setAnimationSpeed, fps, setFps, backgroundColor, setBackgroundColor, cardHeight, setCardHeight, cardWidth, setCardWidth, inputProps, compositionId = COMPOSITION_ID }) => {
+  cardStyle: string;
+  setCardStyle: ((value: string) => void) | React.Dispatch<React.SetStateAction<string>>;
+}> = ({ text, setText, durationInSeconds, setDurationInSeconds, audioFileName, setAudioFileName, animationType, setAnimationType, animationSpeed, setAnimationSpeed, fps, setFps, backgroundColor, setBackgroundColor, cardHeight, setCardHeight, cardWidth, setCardWidth, inputProps, compositionId = COMPOSITION_ID, cardStyle, setCardStyle }) => {
   const { renderMedia, state, undo } = useRendering(compositionId, inputProps);
   const [durationText, setDurationText] = React.useState(durationInSeconds.toString());
   const [cardHeightText, setCardHeightText] = React.useState(cardHeight.toString());
@@ -139,6 +147,17 @@ export const RenderControls: React.FC<{
             onChange={setAnimationType}
             value={animationType}
             options={ANIMATION_OPTIONS}
+          ></Select>
+        </div>
+        <div className="mb-2 flex-1">
+          <label className="block text-sm font-medium text-foreground opacity-80 mb-1">
+            Card Style
+          </label>
+          <Select
+            disabled={state.status === "invoking" || state.status === "rendering" || state.status === "done"}
+            onChange={setCardStyle}
+            value={cardStyle}
+            options={CARD_STYLE_OPTIONS}
           ></Select>
         </div>
       </div>

@@ -4,6 +4,8 @@ import { CarouselAnimation } from "./components/CarouselAnimation";
 import { LinearScrollAnimation } from "./components/LinearScrollAnimation";
 import { EasingScrollAnimation } from "./components/EasingScrollAnimation";
 import { GenericCard, GenericCardData } from "../../../../components/cards/GenericCard";
+import { PlayerStatsCard } from "../../../../components/cards/PlayerStatsCard";
+import { MinimalCard } from "../../../../components/cards/MinimalCard";
 
 interface HorizontalScrollProps {
   cardsData?: GenericCardData[];
@@ -12,6 +14,7 @@ interface HorizontalScrollProps {
   animationSpeed?: number;
   cardHeight?: number | string;
   cardWidth?: number | string;
+  cardStyle?: "basic" | "player-stats" | "minimal";
 }
 
 export const HorizontalScroll: React.FC<HorizontalScrollProps> = ({
@@ -21,24 +24,31 @@ export const HorizontalScroll: React.FC<HorizontalScrollProps> = ({
   animationSpeed = 3,
   cardHeight,
   cardWidth,
+  cardStyle = "basic",
 }) => {
-  // Transform data into carousel items with GenericCard components
-  const carouselItems = cardsData.map((cardData, index) => ({
-    id: index,
-    content: (
-      <div
-        style={{
-          width: "100%",
-          height: "100%",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <GenericCard data={cardData} index={index} width={cardWidth} height={cardHeight} />
-      </div>
-    ),
-  }));
+  // Transform data into carousel items with appropriate card components
+  const carouselItems = cardsData.map((cardData, index) => {
+    let CardComponent = GenericCard;
+    if (cardStyle === "player-stats") CardComponent = PlayerStatsCard;
+    if (cardStyle === "minimal") CardComponent = MinimalCard;
+
+    return {
+      id: index,
+      content: (
+        <div
+          style={{
+            width: "100%",
+            height: "100%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <CardComponent data={cardData} index={index} width={cardWidth} height={cardHeight} />
+        </div>
+      ),
+    };
+  });
 
   // Switch between animation types
   if (animationType === "circular") {

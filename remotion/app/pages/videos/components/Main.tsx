@@ -16,7 +16,7 @@ const container: React.CSSProperties = {
 };
 
 
-export const Main = ({ title, audioFileName, cardsData, videoTitle, animationType, animationSpeed, backgroundColor, cardHeight, cardWidth }: z.infer<typeof CompositionProps>) => {
+export const Main = ({ title, audioFileName, cardsData, videoTitle, animationType, animationSpeed, backgroundColor, cardHeight, cardWidth, cardStyle }: z.infer<typeof CompositionProps>) => {
   const { fps } = useVideoConfig();
 
   const dynamicContainer: React.CSSProperties = {
@@ -38,6 +38,7 @@ export const Main = ({ title, audioFileName, cardsData, videoTitle, animationTyp
         animationSpeed={animationSpeed}
         cardHeight={cardHeight}
         cardWidth={cardWidth}
+        cardStyle={cardStyle}
       />
     </AbsoluteFill>
   );
