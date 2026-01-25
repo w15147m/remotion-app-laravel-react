@@ -31,9 +31,9 @@ const ANIMATION_OPTIONS = [
 ];
 
 const CARD_STYLE_OPTIONS = [
-  { label: "Basic Card", value: "basic" },
-  { label: "Player Stats (Premium)", value: "player-stats" },
-  { label: "Minimal (Clean)", value: "minimal" },
+  { label: "Premium (Player Stats)", value: "player-stats" },
+  { label: "Image & Stats (Clean)", value: "image-stats" },
+  { label: "Full Image (Immersive)", value: "full-image" },
 ];
 
 export const RenderControls: React.FC<{

@@ -3,9 +3,10 @@ import { CircularCarouselAnimation } from "./components/CircularCarouselAnimatio
 import { CarouselAnimation } from "./components/CarouselAnimation";
 import { LinearScrollAnimation } from "./components/LinearScrollAnimation";
 import { EasingScrollAnimation } from "./components/EasingScrollAnimation";
-import { GenericCard, GenericCardData } from "../../../../components/cards/GenericCard";
 import { PlayerStatsCard } from "../../../../components/cards/PlayerStatsCard";
-import { MinimalCard } from "../../../../components/cards/MinimalCard";
+import { ImageStatsCard } from "../../../../components/cards/ImageStatsCard";
+import { FullImageCard } from "../../../../components/cards/FullImageCard";
+import { GenericCardData } from "../../../../components/cards/GenericCard"; // Just type for now
 
 interface HorizontalScrollProps {
   cardsData?: GenericCardData[];
@@ -14,7 +15,7 @@ interface HorizontalScrollProps {
   animationSpeed?: number;
   cardHeight?: number | string;
   cardWidth?: number | string;
-  cardStyle?: "basic" | "player-stats" | "minimal";
+  cardStyle?: "player-stats" | "image-stats" | "full-image";
 }
 
 export const HorizontalScroll: React.FC<HorizontalScrollProps> = ({
@@ -24,13 +25,14 @@ export const HorizontalScroll: React.FC<HorizontalScrollProps> = ({
   animationSpeed = 3,
   cardHeight,
   cardWidth,
-  cardStyle = "basic",
+  cardStyle = "player-stats",
 }) => {
   // Transform data into carousel items with appropriate card components
   const carouselItems = cardsData.map((cardData, index) => {
-    let CardComponent = GenericCard;
-    if (cardStyle === "player-stats") CardComponent = PlayerStatsCard;
-    if (cardStyle === "minimal") CardComponent = MinimalCard;
+    let CardComponent = PlayerStatsCard; // Default to premium
+
+    if (cardStyle === "image-stats") CardComponent = ImageStatsCard;
+    if (cardStyle === "full-image") CardComponent = FullImageCard;
 
     return {
       id: index,
@@ -44,7 +46,7 @@ export const HorizontalScroll: React.FC<HorizontalScrollProps> = ({
             justifyContent: "center",
           }}
         >
-          <CardComponent data={cardData} index={index} width={cardWidth} height={cardHeight} />
+          <CardComponent data={cardData} width={cardWidth} height={cardHeight} />
         </div>
       ),
     };
