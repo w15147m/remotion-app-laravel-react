@@ -19,7 +19,7 @@ export const CompositionProps = z.object({
   audioFileName: z.string().optional(),
   cardsData: z.array(GenericCardData).optional(),
   videoTitle: z.string().optional(),
-  animationType: z.enum(["carousel", "circular", "easing"]).optional(),
+  animationType: z.enum(["carousel", "circular", "easing", "ice-cream"]).optional(),
   animationSpeed: z.number().positive().optional(),
   fps: z.number().positive().optional(),
   backgroundColor: z.string().optional(),

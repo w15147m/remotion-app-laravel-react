@@ -27,6 +27,7 @@ const ANIMATION_OPTIONS = [
   { label: "3D Depth Carousel", value: "carousel" },
   { label: "5-Position Circular", value: "circular" },
   { label: "Smooth Easing Scroll", value: "easing" },
+  { label: "Ice Cream App Demo", value: "ice-cream" },
 ];
 
 const CARD_STYLE_OPTIONS = [

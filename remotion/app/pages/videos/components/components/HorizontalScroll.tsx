@@ -1,15 +1,19 @@
 import { CircularCarouselAnimation } from "./components/CircularCarouselAnimation";
 import { CarouselAnimation } from "./components/CarouselAnimation";
 import { EasingScrollAnimation } from "./components/EasingScrollAnimation";
+import { IceCreamApp } from "../IceCreamApp"; // Adjusted path
 import { PlayerStatsCard } from "../../../../components/cards/PlayerStatsCard";
 import { ImageStatsCard } from "../../../../components/cards/ImageStatsCard";
 import { FullImageCard } from "../../../../components/cards/FullImageCard";
-import { GenericCardData } from "../../../../components/cards/GenericCard"; // Just type for now
+import { z } from "zod";
+import { GenericCardData } from "../../../../remotion/schemata";
+
+type CardData = z.infer<typeof GenericCardData>;
 
 interface HorizontalScrollProps {
-  cardsData?: GenericCardData[];
+  cardsData?: CardData[];
   videoTitle?: string;
-  animationType?: "carousel" | "circular" | "linear" | "easing";
+  animationType?: "carousel" | "circular" | "linear" | "easing" | "ice-cream";
   animationSpeed?: number;
   cardHeight?: number | string;
   cardWidth?: number | string;
@@ -57,6 +61,10 @@ export const HorizontalScroll: React.FC<HorizontalScrollProps> = ({
 
   if (animationType === "easing") {
     return <EasingScrollAnimation items={carouselItems} rotationDuration={animationSpeed} videoTitle={videoTitle} cardWidth={cardWidth} />;
+  }
+
+  if (animationType === "ice-cream") {
+    return <IceCreamApp />;
   }
 
   return <CarouselAnimation items={carouselItems} rotationDuration={animationSpeed} videoTitle={videoTitle} />;
