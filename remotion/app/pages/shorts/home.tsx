@@ -104,9 +104,9 @@ export default function Index() {
 
   const [cardStyle, setCardStyle] = useState<string>(() => {
     if (typeof window !== "undefined") {
-      return sessionStorage.getItem("cardStyle") || "basic";
+      return sessionStorage.getItem("cardStyle") || "player-stats";
     }
-    return "basic";
+    return "player-stats";
   });
 
   // Save audioFileName to sessionStorage when changed

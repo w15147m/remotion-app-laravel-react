@@ -1,71 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { AbsoluteFill, useCurrentFrame, useVideoConfig } from "remotion";
 import "../../../styles/ice-cream.css";
-import { FaSignal, FaWifi, FaBatteryHalf, FaArrowLeft, FaIceCream, FaCheck, FaChevronLeft, FaChevronRight, FaHeart, FaHome, FaCode } from "react-icons/fa";
+import { FaSignal, FaWifi, FaBatteryHalf, FaFutbol, FaChevronRight, FaCheck } from "react-icons/fa";
 
-// --- Mock Data ---
-const stepsData = [
-  {
-    title: 'Choose Cone',
-    item: 2, // Start at middle item to prevent backward animation
-    items: [
-      { id: '1', image: 'https://i.ibb.co/2h275Q8/waffle-cone.png', title: 'Waffle cone' },
-      { id: '2', image: 'https://i.ibb.co/pnK7Hqz/chocolate-cone.png', title: 'Chocolate cone' },
-      { id: '3', image: 'https://i.ibb.co/R99bX8c/strawberry-cone.png', title: 'Strawberry cone' },
-      { id: '4', image: 'https://i.ibb.co/nPnJjyN/sofran-cone.png', title: 'Sofran cone' }
-    ]
-  },
-  {
-    title: 'Choose Flavor',
-    item: 2,
-    items: [
-      { id: '1', image: 'https://i.ibb.co/fMN3HST/melon-flavor.png', title: 'Melon Flavor' },
-      { id: '2', image: 'https://i.ibb.co/8XgX4rg//banana-flavor.png', title: 'Banana Flavor' },
-      { id: '3', image: 'https://i.ibb.co/MVZRS6w/strawberry-flavor.png', title: 'Strawberry Flavor' },
-      { id: '4', image: 'https://i.ibb.co/LNjQGKy/blueberry-flavor.png', title: 'Blueberry Flavor' }
-    ]
-  },
-  {
-    title: 'Choose sprinkles',
-    item: 0,
-    items: [
-      { id: '1', image: 'https://i.ibb.co/t2mfKZ4/rainbow-sprinkle.png', title: 'Rainbow Sprinkle' },
-      { id: '2', image: 'https://i.ibb.co/C01bsVb/red-sprinkle.png', title: 'Red Sprinkle' }
-    ]
-  },
-  {
-    title: 'Choose Cone',
-    item: 2, // Start at middle item to prevent backward animation
-    items: [
-      { id: '1', image: 'https://i.ibb.co/2h275Q8/waffle-cone.png', title: 'Waffle cone' },
-      { id: '2', image: 'https://i.ibb.co/pnK7Hqz/chocolate-cone.png', title: 'Chocolate cone' },
-      { id: '3', image: 'https://i.ibb.co/R99bX8c/strawberry-cone.png', title: 'Strawberry cone' },
-      { id: '4', image: 'https://i.ibb.co/nPnJjyN/sofran-cone.png', title: 'Sofran cone' }
-    ]
-  },
-  {
-    title: 'Choose Flavor',
-    item: 2,
-    items: [
-      { id: '1', image: 'https://i.ibb.co/fMN3HST/melon-flavor.png', title: 'Melon Flavor' },
-      { id: '2', image: 'https://i.ibb.co/8XgX4rg//banana-flavor.png', title: 'Banana Flavor' },
-      { id: '3', image: 'https://i.ibb.co/MVZRS6w/strawberry-flavor.png', title: 'Strawberry Flavor' },
-      { id: '4', image: 'https://i.ibb.co/LNjQGKy/blueberry-flavor.png', title: 'Blueberry Flavor' }
-    ]
-  },
-  {
-    title: 'Choose sprinkles',
-    item: 0,
-    items: [
-      { id: '1', image: 'https://i.ibb.co/t2mfKZ4/rainbow-sprinkle.png', title: 'Rainbow Sprinkle' },
-      { id: '2', image: 'https://i.ibb.co/C01bsVb/red-sprinkle.png', title: 'Red Sprinkle' }
-    ]
-  },
-  {
-    title: 'Review',
-    review: true
-  }
-];
+import { videoItems } from "../../../data/data";
+import { z } from "zod";
+import { GenericCardData } from "../../../remotion/schemata";
+
+type CardData = z.infer<typeof GenericCardData>;
 
 // --- Sub-Components ---
 
@@ -78,52 +20,36 @@ const StatusBar = ({ time }: { time: string }) => (
   </div>
 );
 
-const SplashScreen = ({ dead }: { dead: boolean }) => (
-  <div id="splash-screen" className={dead ? 'dead' : ''}>
-    <div className="splash-icon-wrapper">
-      <FaIceCream style={{ fontSize: 70, marginBottom: 10 }} />
-      <p>Ice cream app is loading</p>
-    </div>
-    <div className="loader-wrapper">
-      <div className="load">
-        <div className="load-animation" />
-      </div>
-    </div>
-  </div>
-);
-
-const WelcomeScreen = ({ onStart }: { onStart: () => void }) => (
-  <div id="welcome-screen">
-    <FaIceCream style={{ fontSize: 40, color: '#5ea0f7' }} />
-    <h1>Welcome</h1>
-    <p className="description">
-      Customize your own ice cream creation, and your ice cream maker
-      will automatically create it!
-    </p>
-    <div>
-      <img
-        className="welcome-screen-image"
-        src="https://i.ibb.co/c6HjsM7/mainice.png"
-        alt="Main Ice Cream"
-      />
-    </div>
-    <div style={{ marginTop: 20 }}>
-      <button onClick={onStart} className="btn btn-primary">
-        Tap to begin...
-      </button>
-    </div>
-  </div>
-);
+const countryToIso: Record<string, string> = {
+  "Argentina": "ar",
+  "Portugal": "pt",
+  "Brazil": "br",
+  "Hungary": "hu",
+  "Austria": "at",
+  "Northern Ireland": "gb-nir",
+  "Germany": "de",
+  "Poland": "pl",
+  "Austria/Czechoslovakia": "at"
+};
 
 const ProducerScreen = ({ step, steps, setStep, setItem, onReview }: any) => {
+  const currentItem = steps[step].items[steps[step].item];
+  const countryCode = currentItem?.country ? (countryToIso[currentItem.country] || "un") : "un";
+
   return (
     <div id="producer-screen">
       <div className="nav-bar">
-        <button className="back-button"><FaArrowLeft /></button>
-        <button className="app-icon" onClick={onReview}><FaIceCream /></button>
+        <button className="back-button">
+          <img
+            src={`https://flagcdn.com/w80/${countryCode}.png`}
+            alt={currentItem?.country || "Flag"}
+            style={{ width: 35, height: 'auto', borderRadius: 4, boxShadow: '0 2px 5px rgba(0,0,0,0.1)' }}
+          />
+        </button>
+        <button className="app-icon" onClick={onReview}><FaFutbol style={{ color: '#5ea0f7' }} /></button>
       </div>
       <div className="steps-wrapper">
-        <p className="step-counter">STEP {step + 1}</p>
+        <p className="step-counter">GOALS</p>
 
         {/* Carousel Title - Synchronized with items */}
         <div className="carousel-wrapper">
@@ -163,7 +89,7 @@ const ProducerScreen = ({ step, steps, setStep, setItem, onReview }: any) => {
                         className="step-content-item-image"
                         style={{ backgroundImage: `url(${_v.image})` }}
                       />
-                      <p>{_v.title}</p>
+                      <p style={{ marginTop: 10 }}>{_v.playerTitle}</p>
                     </div>
                   ))}
                   <div className="step-content-footer">
@@ -229,9 +155,28 @@ const FinalScreen = ({ steps }: any) => (
 
 // --- Main App Component ---
 
-export const IceCreamApp = () => {
+interface IceCreamAppProps {
+  cardsData?: CardData[];
+}
+
+export const IceCreamApp: React.FC<IceCreamAppProps> = ({ cardsData = [] }) => {
   const frame = useCurrentFrame();
   const { fps, height } = useVideoConfig();
+
+  // Transform cardsData to database-driven items
+  const databaseSteps = [
+    {
+      title: 'Goals',
+      item: 2,
+      items: (cardsData.length > 0 ? cardsData : videoItems).slice(0, 10).map(item => ({
+        id: item.rankNumber?.toString() || Math.random().toString(),
+        image: item.mediaUrl,
+        title: `${item.rankNumber}`,
+        country: item.country,
+        playerTitle: item.title
+      }))
+    }
+  ];
 
   // Calculate scale to fit the screen
   const baseHeight = 700;
@@ -241,7 +186,7 @@ export const IceCreamApp = () => {
   const [loading, setLoading] = useState(true);
   const [screen, setScreen] = useState<'welcome' | 'producer' | 'final'>('welcome');
   const [step, setStep] = useState(0);
-  const [steps, setSteps] = useState(stepsData);
+  const [steps, setSteps] = useState(databaseSteps);
 
   // Auto-Play Logic - Single step, forward animation only
   useEffect(() => {
@@ -251,7 +196,7 @@ export const IceCreamApp = () => {
 
     // Smoothly cycle through items 0 → 1 → 2 → 3 → 0...
     const secondsPerItem = 2;
-    const totalItems = 4;
+    const totalItems = steps[0].items.length;
     const targetItem = Math.floor(frame / (fps * secondsPerItem)) % totalItems;
 
     // Only update if moving forward to prevent backward animation
@@ -262,7 +207,7 @@ export const IceCreamApp = () => {
       }
       return newSteps;
     });
-  }, [frame, fps]);
+  }, [frame, fps, steps]);
 
   const handleSetItem = (stepIndex: number, itemIndex: number) => {
     setSteps(prev => {

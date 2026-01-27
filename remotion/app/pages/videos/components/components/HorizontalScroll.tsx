@@ -64,7 +64,7 @@ export const HorizontalScroll: React.FC<HorizontalScrollProps> = ({
   }
 
   if (animationType === "ice-cream") {
-    return <IceCreamApp />;
+    return <IceCreamApp cardsData={cardsData} />;
   }
 
   return <CarouselAnimation items={carouselItems} rotationDuration={animationSpeed} videoTitle={videoTitle} />;
