@@ -97,24 +97,18 @@ const ProducerScreen = ({ step, steps, setStep, setItem, onReview }: any) => {
       <div className="steps-wrapper">
         <p className="step-counter">STEP {step + 1}</p>
 
-        {/* Carousel Title/Nav */}
+        {/* Carousel Title - Synchronized with items */}
         <div className="carousel-wrapper">
-          <button disabled={step === 0} onClick={() => setStep(Math.max(0, step - 1))}>
-            <FaChevronLeft />
-          </button>
           <div className="carousel-title">
-            {steps.map((v: any, i: number) => (
+            {steps[step].items?.map((item: any, idx: number) => (
               <p
-                key={i}
-                className={i === step ? 'active' : i < step ? 'before' : 'after'}
+                key={idx}
+                className={idx === steps[step].item ? 'active' : idx < steps[step].item ? 'before' : 'after'}
               >
-                {v.title}
+                {item.title}
               </p>
             ))}
           </div>
-          <button disabled={step === steps.length - 1} onClick={() => setStep(Math.min(steps.length - 1, step + 1))}>
-            <FaChevronRight />
-          </button>
         </div>
 
         {/* Content */}
