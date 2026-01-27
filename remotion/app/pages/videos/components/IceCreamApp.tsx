@@ -34,6 +34,34 @@ const stepsData = [
     ]
   },
   {
+    title: 'Choose Cone',
+    item: 2, // Start at middle item to prevent backward animation
+    items: [
+      { id: '1', image: 'https://i.ibb.co/2h275Q8/waffle-cone.png', title: 'Waffle cone' },
+      { id: '2', image: 'https://i.ibb.co/pnK7Hqz/chocolate-cone.png', title: 'Chocolate cone' },
+      { id: '3', image: 'https://i.ibb.co/R99bX8c/strawberry-cone.png', title: 'Strawberry cone' },
+      { id: '4', image: 'https://i.ibb.co/nPnJjyN/sofran-cone.png', title: 'Sofran cone' }
+    ]
+  },
+  {
+    title: 'Choose Flavor',
+    item: 2,
+    items: [
+      { id: '1', image: 'https://i.ibb.co/fMN3HST/melon-flavor.png', title: 'Melon Flavor' },
+      { id: '2', image: 'https://i.ibb.co/8XgX4rg//banana-flavor.png', title: 'Banana Flavor' },
+      { id: '3', image: 'https://i.ibb.co/MVZRS6w/strawberry-flavor.png', title: 'Strawberry Flavor' },
+      { id: '4', image: 'https://i.ibb.co/LNjQGKy/blueberry-flavor.png', title: 'Blueberry Flavor' }
+    ]
+  },
+  {
+    title: 'Choose sprinkles',
+    item: 0,
+    items: [
+      { id: '1', image: 'https://i.ibb.co/t2mfKZ4/rainbow-sprinkle.png', title: 'Rainbow Sprinkle' },
+      { id: '2', image: 'https://i.ibb.co/C01bsVb/red-sprinkle.png', title: 'Red Sprinkle' }
+    ]
+  },
+  {
     title: 'Review',
     review: true
   }
@@ -139,9 +167,6 @@ const ProducerScreen = ({ step, steps, setStep, setItem, onReview }: any) => {
                     </div>
                   ))}
                   <div className="step-content-footer">
-                    <div className="selected">
-                      <FaCheck /> <span>Selected</span>
-                    </div>
                     <div className="bullet-wrapper">
                       {v.items.map((_v: any, _i: number) => (
                         <div key={_i} className={`bullet ${_i === v.item ? 'active' : ''}`} />

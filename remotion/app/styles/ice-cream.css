@@ -362,11 +362,16 @@
 
 .ice-cream-app-container .steps-wrapper .step-content-wrapper .step-content .step-content-item.active {
   left: 50%;
-  margin-top: 40px;
+  margin-top: 60px;
   margin-left: -67px;
   /* Adjusted for width */
   z-index: 3;
-  transform: scale(1);
+  transform: scale(1.8);
+}
+
+.ice-cream-app-container .steps-wrapper .step-content-wrapper .step-content .step-content-item.active p {
+  font-size: 16px;
+  font-weight: bold;
 }
 
 .ice-cream-app-container .steps-wrapper .step-content-wrapper .step-content .step-content-item.before {
