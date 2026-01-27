@@ -48,7 +48,7 @@ export default function VideoItemPage({ video, video_items: initialItems }: Vide
     url: route('videoItem.create', { video: video.id }),
   };
 
-  // Handle bulk upload success
+  // Handle bulk upload successcd
   const handleBulkUploadSuccess = () => {
     // Reload the page to refresh items
     window.location.reload();
