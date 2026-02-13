@@ -6,3 +6,8 @@ https://freefrontend.com/javascript-book-effects/
 Upgrade ALL React Router packages to the SAME version
     npm install react-router@7.5.2 @react-router/node@7.5.2 @react-router/serve@7.5.2
 /
+
+
+idia links
+
+https://www.youtube.com/shorts/HF2lbgn-eVI
